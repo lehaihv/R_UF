@@ -1,5 +1,8 @@
 library(EpiEstim)
 library(ggplot2)
+library(readxl)
+## install.packages("writexl")
+library(writexl)
 
 ## load data
 data <- read_excel("~/Documents/GitHub/R_UF/covid_concentration.xlsx")
@@ -9,9 +12,64 @@ data <- read_excel("~/Documents/GitHub/R_UF/covid_concentration.xlsx")
 ## View(data["I"])
 ## View(data)
 
-## data(Flu2009)
+data(Flu2009)
 
-## save(data, file='my_data.rda')
+date_only = as.Date(as.character(as.POSIXct(data$dates)))
 
-## load(file='my_data.rda')
+data$dates = date_only
+# 
+# write_xlsx(data, "~/Documents/GitHub/R_UF/covid_concentration1.xlsx")
 
+# Flu2009$incidence$dates = data$dates
+# Flu2009$incidence$I = data$I
+
+## use the incidence R package to easily plot the daily incidence data:
+
+# library(incidence)
+# plot(as.incidence(data$I, dates = data$dates))
+
+## Estimating R with a non parametric serial interval distribution
+# res_non_parametric_si <- estimate_R(data,
+#                                     method="non_parametric_si",
+#                                     config = make_config(list(
+#                                       si_distr = Flu2009$si_distr))
+# )
+# plot(res_non_parametric_si, "R")
+
+## Estimating R on sliding weekly windows, with a parametric serial interval
+# res_parametric_si <- estimate_R(data,
+#                                 method="parametric_si",
+#                                 config = make_config(list(
+#                                   mean_si = 2.6,
+#                                   std_si = 1.5))
+# )
+# plot(res_parametric_si, legend = FALSE)
+
+## Estimating R accounting for uncertainty on the serial interval distribution
+# config <- make_config(list(mean_si = 2.6, std_mean_si = 1,
+#                            min_mean_si = 1, max_mean_si = 4.2,
+#                            std_si = 1.5, std_std_si = 0.5,
+#                            min_std_si = 0.5, max_std_si = 2.5))
+# res_uncertain_si <- estimate_R(data,
+#                                method = "uncertain_si",
+#                                config = config)
+# 
+# plot(res_uncertain_si, legend = FALSE) 
+
+## Estimating R and the serial interval using data on pairs infector/infected
+MCMC_seed <- 1
+overall_seed <- 2
+mcmc_control <- make_mcmc_control(seed = MCMC_seed, 
+                                  burnin = 1000)
+dist <- "G" # fitting a Gamma dsitribution for the SI
+config <- make_config(list(si_parametric_distr = dist,
+                           mcmc_control = mcmc_control,
+                           seed = overall_seed, 
+                           n1 = 50, 
+                           n2 = 50))
+res_si_from_data <- estimate_R(data,
+                               method = "si_from_data",
+                               si_data = Flu2009$si_data,
+                               config = config)
+
+plot(res_si_from_data, legend = FALSE)
