@@ -42,13 +42,13 @@ data1$dates = date_only1
 # plot(res_non_parametric_si, "R")
 
 ## Estimating R on sliding weekly windows, with a parametric serial interval
-# res_parametric_si <- estimate_R(data1,
-#                                 method="parametric_si",
-#                                 config = make_config(list(
-#                                   mean_si = 2.6,
-#                                   std_si = 1.5))
-# )
-# plot(res_parametric_si, legend = FALSE)
+res_parametric_si <- estimate_R(data1,
+                                method="parametric_si",
+                                config = make_config(list(
+                                  mean_si = 2.6,
+                                  std_si = 1.5))
+)
+plot(res_parametric_si, legend = FALSE)
 
 ## Estimating R accounting for uncertainty on the serial interval distribution
 # config <- make_config(list(mean_si = 2.6, std_mean_si = 1,
@@ -78,21 +78,21 @@ data1$dates = date_only1
 #                                config = config)
 # 
 # plot(res_si_from_data, legend = FALSE)
-incid <- data1
-dt <- 7L
-weekly_incid <- aggregate_inc(incid, dt)
-#> Incidence aggregated up to day 105 of 107
-si_distr <- Flu2009$si_distr
-
-# estimate Rt using the default parameters (method "non_parametric_si")
-method <- "non_parametric_si"
-config <- make_config(list(si_distr = si_distr))
-res_weekly <- estimate_R_agg(incid = weekly_incid, 
-                             dt = 7L, # aggregation window of the data
-                             dt_out = 7L, # desired sliding window length
-                             iter = 10L,
-                             config = config,
-                             method = method,
-                             grid = list(precision = 0.001, min = -1, max = 1))
-
-plot(res_weekly)
+# incid <- data1
+# dt <- 7L
+# weekly_incid <- aggregate_inc(incid, dt)
+# #> Incidence aggregated up to day 105 of 107
+# si_distr <- Flu2009$si_distr
+# 
+# # estimate Rt using the default parameters (method "non_parametric_si")
+# method <- "non_parametric_si"
+# config <- make_config(list(si_distr = si_distr))
+# res_weekly <- estimate_R_agg(incid = weekly_incid, 
+#                              dt = 7L, # aggregation window of the data
+#                              dt_out = 7L, # desired sliding window length
+#                              iter = 10L,
+#                              config = config,
+#                              method = method,
+#                              grid = list(precision = 0.001, min = -1, max = 1))
+# 
+# plot(res_weekly)
