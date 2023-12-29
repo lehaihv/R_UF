@@ -5,7 +5,7 @@ library(readxl)
 library(writexl)
 
 ## load data
-data <- read_excel("~/Documents/GitHub/R_UF/covid_concentration.xlsx")
+## data <- read_excel("~/Documents/GitHub/R_UF/covid_concentration.xlsx")
 data1 <- read_excel("~/Documents/GitHub/R_UF/covid_29019.xlsx")
 
 ## view data
@@ -15,9 +15,9 @@ data1 <- read_excel("~/Documents/GitHub/R_UF/covid_29019.xlsx")
 
 data(Flu2009)
 
-date_only = as.Date(as.character(as.POSIXct(data$dates)))
-
-data$dates = date_only
+# date_only = as.Date(as.character(as.POSIXct(data$dates)))
+# 
+# data$dates = date_only
 
 date_only1 = as.Date(as.character(as.POSIXct(data1$dates)))
 
@@ -37,7 +37,7 @@ data1$dates = date_only1
 # res_non_parametric_si <- estimate_R(data1,
 #                                     method="non_parametric_si",
 #                                     config = make_config(list(
-#                                       si_distr = Flu2009$si_distr))
+#                                     si_distr = Flu2009$si_distr))
 # )
 # plot(res_non_parametric_si, "R")
 
