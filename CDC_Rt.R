@@ -13,7 +13,7 @@ data1 <- read_excel("~/Documents/GitHub/R_UF/covid_29019.xlsx")
 ## View(data["I"])
 ## View(data)
 
-data(Flu2009)
+## data(Flu2009)
 
 # date_only = as.Date(as.character(as.POSIXct(data$dates)))
 # 
