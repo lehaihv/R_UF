@@ -42,11 +42,17 @@ data1$dates = date_only1
 # plot(res_non_parametric_si, "R")
 
 ## Estimating R on sliding weekly windows, with a parametric serial interval
+## to specify t_start and t_end in config, e.g. to have biweekly sliding
+## windows      
+t_start <- seq(2, nrow(data1)-13)   
+t_end <- t_start + 13  
 res_parametric_si <- estimate_R(data1,
                                 method="parametric_si",
                                 config = make_config(list(
                                   mean_si = 2.6,
-                                  std_si = 1.5))
+                                  std_si = 1.5, 
+                                  t_start = t_start, 
+                                  t_end = t_end))
 )
 plot(res_parametric_si, legend = FALSE)
 
@@ -59,7 +65,7 @@ plot(res_parametric_si, legend = FALSE)
 #                                method = "uncertain_si",
 #                                config = config)
 # 
-# plot(res_uncertain_si, legend = FALSE)
+# plot(res_uncertain_si, legend = FALSE) ## , add=TRUE to plot 2 graph in 1 plot
 
 ## Estimating R and the serial interval using data on pairs infector/infected
 # MCMC_seed <- 1
