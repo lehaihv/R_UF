@@ -6,7 +6,8 @@ library(writexl)
 
 ## load data
 ## data <- read_excel("~/Documents/GitHub/R_UF/covid_concentration.xlsx")
-data1 <- read_excel("~/Documents/GitHub/R_UF/covid_29019.xlsx")
+## data1 <- read_excel("~/Documents/GitHub/R_UF/covid_29019_cc.xlsx")
+data1 <- read_excel("~/Documents/GitHub/R_UF/covid_29019_ww.xlsx")
 
 ## view data
 ## View(data["dates"])
@@ -44,15 +45,23 @@ data1$dates = date_only1
 ## Estimating R on sliding weekly windows, with a parametric serial interval
 ## to specify t_start and t_end in config, e.g. to have biweekly sliding
 ## windows      
-t_start <- seq(2, nrow(data1)-13)   
-t_end <- t_start + 13  
+# t_start <- seq(2, nrow(data1)-13)   
+# t_end <- t_start + 13  
+# res_parametric_si <- estimate_R(data1,
+#                                 method="parametric_si",
+#                                 config = make_config(list(
+#                                   mean_si = 2.6,
+#                                   std_si = 1.5, 
+#                                   t_start = t_start, 
+#                                   t_end = t_end))
+# )
+# plot(res_parametric_si, legend = FALSE)
+
 res_parametric_si <- estimate_R(data1,
                                 method="parametric_si",
                                 config = make_config(list(
                                   mean_si = 2.6,
-                                  std_si = 1.5, 
-                                  t_start = t_start, 
-                                  t_end = t_end))
+                                  std_si = 1.5))
 )
 plot(res_parametric_si, legend = FALSE)
 
