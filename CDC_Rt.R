@@ -6,8 +6,10 @@ library(writexl)
 
 ## load data
 ## data <- read_excel("~/Documents/GitHub/R_UF/covid_concentration.xlsx")
-## data1 <- read_excel("~/Documents/GitHub/R_UF/covid_29019_cc.xlsx")
+data <- read_excel("~/Documents/GitHub/R_UF/covid_29019_cc.xlsx")  ## After Dec 2021
 data1 <- read_excel("~/Documents/GitHub/R_UF/covid_29019_ww.xlsx")
+## data1 <- read_excel("~/Documents/GitHub/R_UF/covid_29019_cc_omicron.xlsx") ## Before Dec 2021
+## data1 <- read_excel("~/Documents/GitHub/R_UF/covid_29019_ww_omicron.xlsx")
 
 ## view data
 ## View(data["dates"])
@@ -16,9 +18,9 @@ data1 <- read_excel("~/Documents/GitHub/R_UF/covid_29019_ww.xlsx")
 
 ## data(Flu2009)
 
-# date_only = as.Date(as.character(as.POSIXct(data$dates)))
-# 
-# data$dates = date_only
+date_only = as.Date(as.character(as.POSIXct(data$dates)))
+
+data$dates = date_only
 
 date_only1 = as.Date(as.character(as.POSIXct(data1$dates)))
 
@@ -57,13 +59,22 @@ data1$dates = date_only1
 # )
 # plot(res_parametric_si, legend = FALSE)
 
-res_parametric_si <- estimate_R(data1,
+res_parametric_si <- estimate_R(data,
                                 method="parametric_si",
                                 config = make_config(list(
                                   mean_si = 2.6,
                                   std_si = 1.5))
 )
-plot(res_parametric_si, legend = FALSE)
+plot(res_parametric_si, legend = FALSE, "R") ## "R" only plot Estimated Rt
+
+# res_parametric_si1 <- estimate_R(data1,
+#                                 method="parametric_si",
+#                                 config = make_config(list(
+#                                   mean_si = 2.6,
+#                                   std_si = 1.5))
+# )
+# lines(res_parametric_si1, legend = FALSE, "R", col="red") ## "R" only plot Estimated Rt
+
 
 ## Estimating R accounting for uncertainty on the serial interval distribution
 # config <- make_config(list(mean_si = 2.6, std_mean_si = 1,
