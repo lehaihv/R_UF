@@ -5,7 +5,7 @@ library(readxl)
 library(writexl)
 
 ## load data
-## data <- read_excel("~/Documents/GitHub/R_UF/covid_concentration.xlsx")
+## data1 <- read_excel("D:/GitHub/R_UF/covid_29019_cc.xlsx")
 data <- read_excel("~/Documents/GitHub/R_UF/covid_29019_cc.xlsx")  ## After Dec 2021
 data1 <- read_excel("~/Documents/GitHub/R_UF/covid_29019_ww.xlsx")
 ## data1 <- read_excel("~/Documents/GitHub/R_UF/covid_29019_cc_omicron.xlsx") ## Before Dec 2021
