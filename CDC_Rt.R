@@ -6,10 +6,10 @@ library(writexl)
 
 ## load data
 ## data1 <- read_excel("D:/GitHub/R_UF/covid_29019_cc.xlsx")
-data <- read_excel("~/Documents/GitHub/R_UF/covid_29019_cc.xlsx")  ## After Dec 2021
-data1 <- read_excel("~/Documents/GitHub/R_UF/covid_29019_ww.xlsx")
-## data1 <- read_excel("~/Documents/GitHub/R_UF/covid_29019_cc_omicron.xlsx") ## Before Dec 2021
-## data1 <- read_excel("~/Documents/GitHub/R_UF/covid_29019_ww_omicron.xlsx")
+data_cc <- read_excel("~/Documents/GitHub/R_UF/covid_29019_cc.xlsx")  ## After Dec 2021
+data_ww <- read_excel("~/Documents/GitHub/R_UF/covid_29019_ww.xlsx")
+# data_cc <- read_excel("~/Documents/GitHub/R_UF/covid_29019_cc_omicron.xlsx") ## Before Dec 2021
+# data_ww <- read_excel("~/Documents/GitHub/R_UF/covid_29019_ww_omicron.xlsx")
 
 ## view data
 ## View(data["dates"])
@@ -18,13 +18,13 @@ data1 <- read_excel("~/Documents/GitHub/R_UF/covid_29019_ww.xlsx")
 
 ## data(Flu2009)
 
-date_only = as.Date(as.character(as.POSIXct(data$dates)))
+date_only = as.Date(as.character(as.POSIXct(data_cc$dates)))
 
-data$dates = date_only
+data_cc$dates = date_only
 
-date_only1 = as.Date(as.character(as.POSIXct(data1$dates)))
+date_only1 = as.Date(as.character(as.POSIXct(data_ww$dates)))
 
-data1$dates = date_only1
+data_ww$dates = date_only1
 # 
 # write_xlsx(data, "~/Documents/GitHub/R_UF/covid_concentration1.xlsx")
 
@@ -44,11 +44,11 @@ data1$dates = date_only1
 # )
 # plot(res_non_parametric_si, "R")
 
-## Estimating R on sliding weekly windows, with a parametric serial interval
-## to specify t_start and t_end in config, e.g. to have biweekly sliding
-## windows      
-# t_start <- seq(2, nrow(data1)-13)   
-# t_end <- t_start + 13  
+# Estimating R on sliding weekly windows, with a parametric serial interval
+# to specify t_start and t_end in config, e.g. to have biweekly sliding
+# windows
+t_start <- seq(2, nrow(data_cc)-13)
+t_end <- t_start + 13
 # res_parametric_si <- estimate_R(data1,
 #                                 method="parametric_si",
 #                                 config = make_config(list(
@@ -59,21 +59,29 @@ data1$dates = date_only1
 # )
 # plot(res_parametric_si, legend = FALSE)
 
-res_parametric_si <- estimate_R(data,
+res_parametric_si_cc <- estimate_R(data_cc,
                                 method="parametric_si",
                                 config = make_config(list(
                                   mean_si = 2.6,
-                                  std_si = 1.5))
+                                  std_si = 1.5, 
+                                  t_start = t_start,
+                                  t_end = t_end))
 )
-plot(res_parametric_si, legend = FALSE, "R") ## "R" only plot Estimated Rt
+# plot(res_parametric_si, legend = FALSE, "R") ## "R" only plot Estimated Rt
 
-# res_parametric_si1 <- estimate_R(data1,
-#                                 method="parametric_si",
-#                                 config = make_config(list(
-#                                   mean_si = 2.6,
-#                                   std_si = 1.5))
-# )
-# lines(res_parametric_si1, legend = FALSE, "R", col="red") ## "R" only plot Estimated Rt
+res_parametric_si_ww <- estimate_R(data_ww,
+                                method="parametric_si",
+                                config = make_config(list(
+                                  mean_si = 2.6,
+                                  std_si = 1.5, 
+                                  t_start = t_start,
+                                  t_end = t_end))
+)
+# plot(res_parametric_si1, legend = FALSE, "R") ## "R" only plot Estimated Rt
+
+## visualize R estimates on the same plot
+estimate_R_plots(list(res_parametric_si_cc, res_parametric_si_ww), what = "R",
+                 options_R = list(col = c("blue", "red")), legend = TRUE)
 
 
 ## Estimating R accounting for uncertainty on the serial interval distribution
