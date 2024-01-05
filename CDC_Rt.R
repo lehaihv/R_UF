@@ -6,7 +6,7 @@ library(writexl)
 
 ## load data
 ## data1 <- read_excel("D:/GitHub/R_UF/covid_29019_cc.xlsx")
-# data_cc <- read_excel("~/Documents/GitHub/R_UF/covid_29019_cc.xlsx")  ## After Dec 2021
+data_cc <- read_excel("~/Documents/GitHub/R_UF/covid_29019_cc.xlsx")  ## After Dec 2021
 data_ww <- read_excel("~/Documents/GitHub/R_UF/covid_29019_ww.xlsx")
 # data_cc <- read_excel("~/Documents/GitHub/R_UF/covid_29019_cc_omicron.xlsx") ## Before Dec 2021
 # data_ww <- read_excel("~/Documents/GitHub/R_UF/covid_29019_ww_omicron.xlsx")
@@ -18,8 +18,8 @@ data_ww <- read_excel("~/Documents/GitHub/R_UF/covid_29019_ww.xlsx")
 
 ## data(Flu2009)
 
-# date_only = as.Date(as.character(as.POSIXct(data_cc$dates)))
-# data_cc$dates = date_only
+date_only = as.Date(as.character(as.POSIXct(data_cc$dates)))
+data_cc$dates = date_only
 
 date_only1 = as.Date(as.character(as.POSIXct(data_ww$dates)))
 data_ww$dates = date_only1
@@ -57,25 +57,30 @@ data_ww$dates = date_only1
 # )
 # plot(res_parametric_si, legend = FALSE)
 
-# res_parametric_si_cc <- estimate_R(data_cc,
-#                                 method="parametric_si",
-#                                 config = make_config(list(
-#                                   mean_si = 2.6,
-#                                   std_si = 1.5))
-# )
-# plot(res_parametric_si_cc, legend = FALSE, "R") ## "R" only plot Estimated Rt
+res_parametric_si_cc <- estimate_R(data_cc,
+                                method="parametric_si",
+                                config = make_config(list(
+                                mean_si = 2.6,
+                                std_si = 1.5))
+)
+plot(res_parametric_si_cc, legend = FALSE, "R") ## "R" only plot Estimated Rt
 
 res_parametric_si_ww <- estimate_R(data_ww,
                                 method="parametric_si",
                                 config = make_config(list(
-                                  mean_si = 2.6,
-                                  std_si = 1.5))
+                                mean_si = 2.6,
+                                std_si = 1.5))
 )
 plot(res_parametric_si_ww, legend = FALSE, "R") ## "R" only plot Estimated Rt
 
 ## visualize R estimates on the same plot
-# estimate_R_plots(list(res_parametric_si_cc, res_parametric_si_ww), what = "R",
-#                  options_R = list(col = c("blue", "red")), legend = TRUE)
+estimate_R_plots(list(res_parametric_si_cc, res_parametric_si_ww), what = "R",
+                 options_R = list(col = c("blue", "red")), legend = TRUE)
+
+
+## wrtie value of estimated R to excel file
+# write_xlsx(res_parametric_si_cc[["R"]],"~/Documents/GitHub/R_UF/covid_29019_Rt_cc.xlsx")
+# write_xlsx(res_parametric_si_ww[["R"]],"~/Documents/GitHub/R_UF/covid_29019_Rt_ww.xlsx")
 
 
 ## Estimating R accounting for uncertainty on the serial interval distribution
