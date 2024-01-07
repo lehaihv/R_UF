@@ -61,8 +61,8 @@ data_ww$dates = date_only1
 res_parametric_si_cc <- estimate_R(data_cc,
                                 method="parametric_si",
                                 config = make_config(list(
-                                mean_si = 4.7,
-                                std_si = 2.9))
+                                mean_si = 5.3,
+                                std_si = 3.2))
 )
 plot(res_parametric_si_cc, legend = FALSE, "R") ## "R" only plot Estimated Rt
 
