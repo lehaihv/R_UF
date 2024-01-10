@@ -47,8 +47,8 @@ data_ww$dates = date_only1
 # Estimating R on sliding weekly windows, with a parametric serial interval
 # to specify t_start and t_end in config, e.g. to have biweekly sliding
 # windows
-t_start <- seq(2, nrow(data_cc)-13)
-t_end <- t_start + 13
+# t_start <- seq(2, nrow(data_cc)-13)
+# t_end <- t_start + 13
 # res_parametric_si <- estimate_R(data1,
 #                                 method="parametric_si",
 #                                 config = make_config(list(
@@ -62,10 +62,8 @@ t_end <- t_start + 13
 res_parametric_si_cc <- estimate_R(data_cc,
                                 method="parametric_si",
                                 config = make_config(list(
-                                mean_si = 4.8,
-                                std_si = 2.3, 
-                                t_start = t_start, 
-                                t_end = t_end))
+                                mean_si = 4.7,
+                                std_si = 2.9))
 )
 plot(res_parametric_si_cc, legend = FALSE, "R") ## "R" only plot Estimated Rt
 
