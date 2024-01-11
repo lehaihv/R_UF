@@ -7,7 +7,7 @@ library(writexl)
 ## load data
 ## data1 <- read_excel("D:/GitHub/R_UF/covid_29019_cc.xlsx")
 ## data_cc <- read_excel("~/Documents/GitHub/R_UF/paper_data.xlsx")
-data_cc <- read_excel("~/Documents/GitHub/R_UF/covid_49049_cc.xlsx")  ## After Dec 2021
+data_cc <- read_excel("~/Documents/GitHub/R_UF/covid_29019_cc.xlsx")  ## After Dec 2021
 # data_ww <- read_excel("~/Documents/GitHub/R_UF/covid_29019_cc.xlsx")
 ## data_ww <- read_excel("~/Documents/GitHub/R_UF/covid_264_ww.xlsx")
 # data_cc <- read_excel("~/Documents/GitHub/R_UF/covid_29019_cc_omicron.xlsx") ## Before Dec 2021
@@ -23,8 +23,8 @@ data_cc <- read_excel("~/Documents/GitHub/R_UF/covid_49049_cc.xlsx")  ## After D
 date_only = as.Date(as.character(as.POSIXct(data_cc$dates)))
 data_cc$dates = date_only
 
-date_only1 = as.Date(as.character(as.POSIXct(data_ww$dates)))
-data_ww$dates = date_only1
+# date_only1 = as.Date(as.character(as.POSIXct(data_ww$dates)))
+# data_ww$dates = date_only1
 # 
 # write_xlsx(data, "~/Documents/GitHub/R_UF/covid_concentration1.xlsx")
 
@@ -81,7 +81,7 @@ plot(res_parametric_si_cc, legend = FALSE, "R") ## "R" only plot Estimated Rt
 
 
 ## wrtie value of estimated R to excel file
-# write_xlsx(res_parametric_si_cc[["R"]],"~/Documents/GitHub/R_UF/covid_29019_Rt_cc.xlsx")
+write_xlsx(res_parametric_si_cc[["R"]],"~/Documents/GitHub/R_UF/covid_Rt_cc.xlsx")
 # write_xlsx(res_parametric_si_ww[["R"]],"~/Documents/GitHub/R_UF/covid_29019_Rt_ww.xlsx")
 
 
