@@ -108,5 +108,5 @@ model4 <- rlassoEffects(outcome ~ ., data = covid_a, post = FALSE, method = "dou
 #coef(model5, s = c("lambda.min", "lambda.1se"))
 
 ########## clear
-# rm(list = ls())
+rm(list = ls())
 
