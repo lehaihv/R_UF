@@ -15,6 +15,8 @@ library(hdm)
 
 library(fastDummies)
 
+options(max.print=999999)
+
 # Paths
 # raw_path     <- "/blue/wjoo/project/wastewater/data/raw/"
 # data_path     <- "/blue/wjoo/project/wastewater/data/"
@@ -64,8 +66,10 @@ covid_a <- copy(covid)
 covid_a$outcome <- covid_a$d_r_log_nyt
 covid_a <- covid_a[, -c("fips", "cumulative_confirmed_cases_by_100k_pop", "cumulative_deaths_by_100k_pop", "c_r_log_nyt", "d_r_log_nyt")] 
 
+# Model 1: Linear Regression outcome ~ seg_reldiv_all
 model1 <- summary(lm(outcome ~ seg_reldiv_all, data = covid_a))
 
+# Model 2: Linear Regression outcome ~ seg_reldiv_all + state_
 state <- grep("state_", names(covid_a), value=TRUE)
 formula <- paste(c("outcome ~ seg_reldiv_all", state), collapse = "+")
 model2 <- summary(lm(formula, data = covid_a))
