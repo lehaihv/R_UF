@@ -61,7 +61,6 @@ cor(covid$d_r_log_nyt, covid$cumulative_deaths_by_100k_pop)
 
 
 ##### analysis 1. deaths per 100k (measured by September 30, 2020)
-
 covid_a <- copy(covid)
 covid_a$outcome <- covid_a$d_r_log_nyt
 covid_a <- covid_a[, -c("fips", "cumulative_confirmed_cases_by_100k_pop", "cumulative_deaths_by_100k_pop", "c_r_log_nyt", "d_r_log_nyt")] 
@@ -95,7 +94,7 @@ covid_a <- copy(covid)
 covid_a$outcome <- covid_a$cumulative_deaths_by_100k_pop
 covid_a <- covid_a[, -c("fips", "cumulative_confirmed_cases_by_100k_pop", "cumulative_deaths_by_100k_pop", "c_r_log_nyt", "d_r_log_nyt")] 
 
-model1 <- summary(lm(outcome ~ seg_reldiv_all + sqrt(seg_reldiv_all), data = covid_a))
+model1 <- summary(lm(outcome ~ seg_reldiv_all, data = covid_a)) #+ sqrt(seg_reldiv_all)
 # I(seg_reldiv_all^2) + I(seg_reldiv_all^3)
 
 #Plot data
