@@ -72,8 +72,6 @@ model1 <- summary(lm(outcome ~ seg_reldiv_all, data = covid_a))
 #Plot data
 plot(covid_a$seg_reldiv_all, covid_a$outcome, pch = 16, col = "blue") #Plot the results
 abline(model1, col = "darkgreen") #Add a regression line
-# plot(model1$residuals, covid_a$outcome, pch = 16, col = "red") #Plot the residuals
-# abline(model1, col = "green") #Add a regression line
 plot(model1$residuals, pch = 16, col = "red") #Plot the residuals
 abline(model1, col = "darkgreen") #Add a regression line
 
@@ -82,32 +80,14 @@ state <- grep("state_", names(covid_a), value=TRUE)
 formula <- paste(c("outcome ~ seg_reldiv_all", state), collapse = "+")
 model2 <- summary(lm(formula, data = covid_a))
 
-#Plot data
-# plot(covid_a$seg_reldiv_all, covid_a$outcome, pch = 16, col = "blue") #Plot the results
-# abline(model2, col = "green") #Add a regression line
-# plot(model2$residuals, covid_a$outcome, pch = 16, col = "red") #Plot the residuals
-# abline(model2, col = "green") #Add a regression line
-
 lasso <- rlasso(outcome ~ ., data = covid_a, post = FALSE)
 selected <- which(coef(lasso)[-c(1:1)]!=0)
 formula <- paste(c("outcome ~ seg_reldiv_all", names(selected)), collapse = "+")
 model3 <- summary(lm(formula, data = covid_a))
 
-#Plot data
-plot(covid_a$seg_reldiv_all, covid_a$outcome, pch = 16, col = "blue") #Plot the results
-abline(model3, col = "green") #Add a regression line
-plot(model3$residuals, pch = 16, col = "red") #Plot the residuals
-abline(model3, col = "green") #Add a regression line
-
 state <- grep("state_", names(covid_a), value=TRUE)
 control <- paste0("~", paste(state, collapse = "+"))
 model4 <- rlassoEffects(outcome ~ ., data = covid_a, post = FALSE, method = "double selection", I = ~ seg_reldiv_all, included = control)
-
-#Plot data
-plot(covid_a$seg_reldiv_all, covid_a$outcome, pch = 16, col = "blue") #Plot the results
-abline(model4, col = "green") #Add a regression line
-plot(model4$residuals$e, model4$residuals$v, pch = 16, col = "red") #Plot the residuals
-abline(model4, col = "green") #Add a regression line
 
 ##### analysis 2. cumulative deaths deaths per 100k (measured by March 2023)
 
@@ -115,13 +95,14 @@ covid_a <- copy(covid)
 covid_a$outcome <- covid_a$cumulative_deaths_by_100k_pop
 covid_a <- covid_a[, -c("fips", "cumulative_confirmed_cases_by_100k_pop", "cumulative_deaths_by_100k_pop", "c_r_log_nyt", "d_r_log_nyt")] 
 
-model1 <- summary(lm(outcome ~ seg_reldiv_all, data = covid_a))
+model1 <- summary(lm(outcome ~ seg_reldiv_all + sqrt(seg_reldiv_all), data = covid_a))
+# I(seg_reldiv_all^2) + I(seg_reldiv_all^3)
 
 #Plot data
 plot(covid_a$seg_reldiv_all, covid_a$outcome, pch = 16, col = "blue") #Plot the results
-abline(model1, col = "green") #Add a regression line
-plot(model1$residuals, covid_a$outcome, pch = 16, col = "red") #Plot the residuals
-abline(model1, col = "green") #Add a regression line
+abline(model1, col = "darkgreen") #Add a regression line
+plot(model1$residuals, pch = 16, col = "red") #Plot the residuals
+abline(model1, col = "darkgreen") #Add a regression line
 
 
 state <- grep("state_", names(covid_a), value=TRUE)
