@@ -66,9 +66,9 @@ cor(covid$d_r_log_nyt, covid$cumulative_deaths_by_100k_pop)
 
 ##### analysis 1. deaths per 100k (measured by September 30, 2020)
 covid_a <- copy(covid)
-covid_a$outcome <- covid_a$d_r_log_nyt
+covid_a$outcome_PNAS <- covid_a$d_r_log_nyt
 covid_a <- covid_a[, -c("fips", "cumulative_confirmed_cases_by_100k_pop", "cumulative_deaths_by_100k_pop", "c_r_log_nyt", "d_r_log_nyt")]
-model1 <- summary(lm(outcome ~ seg_reldiv_all, data = covid_a))
+model1 <- summary(lm(outcome_PNAS ~ seg_reldiv_all, data = covid_a))
 
 # Get all PNAS parameters of Fig 1
 
@@ -76,25 +76,28 @@ pnas <- grep("dem_", names(covid_a), value=TRUE)
 pnas1 <- grep("air_", names(covid_a), value=TRUE)
 pnas2 <- grep("cbp_", names(covid_a), value=TRUE)
 pnas3 <- grep("rwj_", names(covid_a), value=TRUE)
+state <- grep("state_", names(covid_a), value=TRUE)
 
 # Model 2: Linear Regression outcome ~ seg_reldiv_all + pnas_
-formula <- paste(c("outcome ~ seg_reldiv_all", pnas), collapse = "+")
+formula <- paste(c("outcome_PNAS ~ seg_reldiv_all", pnas), collapse = "+")
 # , pnas1, pnas2, pnas3
 # Coefficient plots
 model2 <- summary(lm(formula, data = covid_a))
 # cm <- c("dem_65over" = "% older 65",
 #        'dem_25under' = '% younger than 25')
 # coef_map = cm,
-modelplot(model2, coef_omit=c(1, 2), color="blue", size=1) +
+modelplot(model2, coef_omit=c(1, 2), size=1) + # color="blue",
   labs(title="Coefficient plots plots of regression of controls predicting COVID ouctomes and segregation") +
   theme_linedraw() +
-  geom_vline(aes(xintercept = 0), color="red")
+  geom_vline(aes(xintercept = 0), color="red") +
+  aes(color = ifelse(p.value < 0.001, "Significant", "Not significant")) +
+  scale_color_manual(values = c("grey", "blue"))
 
 #### analysis 2. cumulative deaths deaths per 100k (measured by March 2023)
 covid_a <- copy(covid)
-covid_a$outcome <- covid_a$cumulative_deaths_by_100k_pop
+covid_a$outcome_JH <- covid_a$cumulative_deaths_by_100k_pop
 covid_a <- covid_a[, -c("fips", "cumulative_confirmed_cases_by_100k_pop", "cumulative_deaths_by_100k_pop", "c_r_log_nyt", "d_r_log_nyt")]
-model1 <- summary(lm(outcome ~ seg_reldiv_all, data = covid_a))
+model1 <- summary(lm(outcome_JH ~ seg_reldiv_all, data = covid_a))
 
 # Get all PNAS parameters of Fig 1
 
@@ -102,20 +105,28 @@ pnas <- grep("dem_", names(covid_a), value=TRUE)
 pnas1 <- grep("air_", names(covid_a), value=TRUE)
 pnas2 <- grep("cbp_", names(covid_a), value=TRUE)
 pnas3 <- grep("rwj_", names(covid_a), value=TRUE)
+state <- grep("state_", names(covid_a), value=TRUE)
 
 # Model 2: Linear Regression outcome ~ seg_reldiv_all + pnas_
-formula <- paste(c("outcome ~ seg_reldiv_all", pnas), collapse = "+")
+formula <- paste(c("outcome_JH ~ seg_reldiv_all", pnas), collapse = "+")
 # , pnas1, pnas2, pnas3
 # Coefficient plots
-model2 <- summary(lm(formula, data = covid_a))
+model22 <- summary(lm(formula, data = covid_a))
 # cm <- c("dem_65over" = "% older 65",
 #        'dem_25under' = '% younger than 25')
 # coef_map = cm,
-modelplot(model2, coef_omit=c(1, 2), color="green", size=1) +
+modelplot(model22, coef_omit=c(1, 2), size=1) + #color="green",
   labs(title="Coefficient plots plots of regression of controls predicting COVID ouctomes and segregation") +
   theme_linedraw() +
-  geom_vline(aes(xintercept = 0), color="red")
+  geom_vline(aes(xintercept = 0), color="red") +
+  aes(color = ifelse(p.value < 0.001, "Significant", "Not significant")) +
+  scale_color_manual(values = c("grey", "green"))
 
+# Compare 2 model
+models <- list(model2, model22) # Create list of models to compare
+models <- dvnames(models)       # dvnames(): rename our list with names matching the dependent variable in each model
+modelplot(models, draw = FALSE) # show the raw data used to draw the plot
+modelplot(models, coef_omit=c(1, 2), color = "darkblue") + facet_grid(~model) # display models side by side
 
 ##### analysis 1. deaths per 100k (measured by September 30, 2020)
 # covid_a <- copy(covid)
@@ -226,5 +237,5 @@ modelplot(model2, coef_omit=c(1, 2), color="green", size=1) +
 # #coef(model5, s = c("lambda.min", "lambda.1se"))
 
 ########## clear
-rm(list = ls())
+# rm(list = ls())
 
