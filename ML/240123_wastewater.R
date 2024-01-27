@@ -82,10 +82,10 @@ formula <- paste(c("outcome ~ seg_reldiv_all", pnas), collapse = "+")
 # , pnas1, pnas2, pnas3
 # Coefficient plots
 model2 <- summary(lm(formula, data = covid_a))
-cm <- c("dem_65over" = "% older 65",
-       'dem_25under' = '% younger than 25')
-
-modelplot(model2, coef_map = cm, color="darkgreen", size=1) +
+# cm <- c("dem_65over" = "% older 65",
+#        'dem_25under' = '% younger than 25')
+# coef_map = cm,
+modelplot(model2, coef_omit=c(1, 2), color="blue", size=1) +
   labs(title="Coefficient plots plots of regression of controls predicting COVID ouctomes and segregation") +
   theme_linedraw() +
   geom_vline(aes(xintercept = 0), color="red")
@@ -111,7 +111,7 @@ model2 <- summary(lm(formula, data = covid_a))
 # cm <- c("dem_65over" = "% older 65",
 #        'dem_25under' = '% younger than 25')
 # coef_map = cm,
-modelplot(model2, coef_omit=c(1, 2), color="darkgreen", size=1) +
+modelplot(model2, coef_omit=c(1, 2), color="green", size=1) +
   labs(title="Coefficient plots plots of regression of controls predicting COVID ouctomes and segregation") +
   theme_linedraw() +
   geom_vline(aes(xintercept = 0), color="red")
