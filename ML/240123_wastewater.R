@@ -64,7 +64,7 @@ covid <- merge(torrats, covid, by="fips")
 cor(covid$c_r_log_nyt, covid$cumulative_confirmed_cases_by_100k_pop)
 cor(covid$d_r_log_nyt, covid$cumulative_deaths_by_100k_pop)
 
-##### analysis 1. deaths per 100k (measured by September 30, 2020)
+##### analysis 1. deaths per 100k (measured by September 30, 2020) PNAS
 covid_a <- copy(covid)
 covid_a$outcome_PNAS <- covid_a$d_r_log_nyt
 covid_a <- covid_a[, -c("fips", "cumulative_confirmed_cases_by_100k_pop", "cumulative_deaths_by_100k_pop", "c_r_log_nyt", "d_r_log_nyt")]
@@ -93,11 +93,11 @@ modelplot(model2, coef_omit=c(1, 2), size=1) + # color="blue",
   aes(color = ifelse(p.value < 0.001, "Significant", "Not significant")) +
   scale_color_manual(values = c("grey", "blue"))
 
-#### analysis 2. cumulative deaths deaths per 100k (measured by March 2023)
+#### analysis 2. cumulative deaths deaths per 100k (measured by Sep 2020)
 covid_a <- copy(covid)
 covid_a$outcome_JH <- covid_a$cumulative_deaths_by_100k_pop
 covid_a <- covid_a[, -c("fips", "cumulative_confirmed_cases_by_100k_pop", "cumulative_deaths_by_100k_pop", "c_r_log_nyt", "d_r_log_nyt")]
-model1 <- summary(lm(outcome_JH ~ seg_reldiv_all, data = covid_a))
+model12 <- summary(lm(outcome_JH ~ seg_reldiv_all, data = covid_a))
 
 # Get all PNAS parameters of Fig 1
 
@@ -122,8 +122,58 @@ modelplot(model22, coef_omit=c(1, 2), size=1) + #color="green",
   aes(color = ifelse(p.value < 0.001, "Significant", "Not significant")) +
   scale_color_manual(values = c("grey", "green"))
 
-# Compare 2 model
+#### analysis 3. cumulative deaths deaths per 100k (measured by March 2023)
+covid <- fread(paste0(raw_path, "US_Covid_19_data_by_county_log.csv")) #"US_Covid_19_data_by_county.csv"))
+colnames(covid) <- tolower(colnames(covid))
+covid <- covid[, c("fips", "cumulative_deaths_by_100k_pop", "cumulative_confirmed_cases_by_100k_pop")]
+
+covid <- merge(torrats, covid, by="fips")
+
+cor(covid$c_r_log_nyt, covid$cumulative_confirmed_cases_by_100k_pop)
+cor(covid$d_r_log_nyt, covid$cumulative_deaths_by_100k_pop)
+
+covid_a <- copy(covid)
+covid_a$outcome_JH_full <- covid_a$cumulative_deaths_by_100k_pop
+covid_a <- covid_a[, -c("fips", "cumulative_confirmed_cases_by_100k_pop", "cumulative_deaths_by_100k_pop", "c_r_log_nyt", "d_r_log_nyt")]
+model13 <- summary(lm(outcome_JH_full ~ seg_reldiv_all, data = covid_a))
+
+# Get all PNAS parameters of Fig 1
+
+pnas <- grep("dem_", names(covid_a), value=TRUE)
+pnas1 <- grep("air_", names(covid_a), value=TRUE)
+pnas2 <- grep("cbp_", names(covid_a), value=TRUE)
+pnas3 <- grep("rwj_", names(covid_a), value=TRUE)
+state <- grep("state_", names(covid_a), value=TRUE)
+
+# Model 2: Linear Regression outcome ~ seg_reldiv_all + pnas_
+formula <- paste(c("outcome_JH_full ~ seg_reldiv_all", pnas), collapse = "+")
+# , pnas1, pnas2, pnas3
+# Coefficient plots
+model23 <- summary(lm(formula, data = covid_a))
+# cm <- c("dem_65over" = "% older 65",
+#        'dem_25under' = '% younger than 25')
+# coef_map = cm,
+modelplot(model23, coef_omit=c(1, 2), size=1) + #color="green",
+  labs(title="Coefficient plots plots of regression of controls predicting COVID ouctomes and segregation") +
+  theme_linedraw() +
+  geom_vline(aes(xintercept = 0), color="red") +
+  aes(color = ifelse(p.value < 0.001, "Significant", "Not significant")) +
+  scale_color_manual(values = c("grey", "yellow"))
+
+# Compare 2 model PNAS vs JH (09/30/2020)
 models <- list(model2, model22) # Create list of models to compare
+models <- dvnames(models)       # dvnames(): rename our list with names matching the dependent variable in each model
+modelplot(models, draw = FALSE) # show the raw data used to draw the plot
+modelplot(models, coef_omit=c(1, 2), color = "darkblue") + facet_grid(~model) # display models side by side
+
+# Compare 2 model JH 09/30/2020 vs JH 03/09/2023
+models <- list(model22, model23) # Create list of models to compare
+models <- dvnames(models)       # dvnames(): rename our list with names matching the dependent variable in each model
+modelplot(models, draw = FALSE) # show the raw data used to draw the plot
+modelplot(models, coef_omit=c(1, 2), color = "darkblue") + facet_grid(~model) # display models side by side
+
+# Compare 3 model PNAS vs JH (09/30/2020) vs JH (03/09/2023)
+models <- list(model2, model22, model23) # Create list of models to compare
 models <- dvnames(models)       # dvnames(): rename our list with names matching the dependent variable in each model
 modelplot(models, draw = FALSE) # show the raw data used to draw the plot
 modelplot(models, coef_omit=c(1, 2), color = "darkblue") + facet_grid(~model) # display models side by side
