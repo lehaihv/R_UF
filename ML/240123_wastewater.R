@@ -85,18 +85,20 @@ state <- grep("state_", names(covid_a), value=TRUE)
 formula <- paste(c("outcome_PNAS ~ seg_reldiv_all", pnas), collapse = "+")
 # , pnas1, pnas2, pnas3
 model2 <- summary(lm(formula, data = covid_a))
-# Standardize coefficient data
-df <- model2$coefficients[-c(1,2),] 
-df
-dt <- data.table::as.data.table(df, .keep.rownames = "word")
-# df2 <- dt %>% mutate_at(c('Estimate'), ~(scale(.) %>% as.vector))
-# df2 <- dt %>% mutate_at(c('Estimate', 'Std. Error', 't value'), ~(scale(.) %>% as.vector))
-df2 <- dt %>% mutate_all(~(scale(.) %>% as.vector))
-df2
-# # Calculate SD and mean
-# sd(df2$Estimate)
-# mean(df2$Estimate)
-model2$coefficients <- df2
+
+# # Standardize coefficient data
+# df <- model2$coefficients[-c(1,2),] 
+# df
+# dt <- data.table::as.data.table(df, .keep.rownames = "word")
+# # df2 <- dt %>% mutate_at(c('Estimate'), ~(scale(.) %>% as.vector))
+# # df2 <- dt %>% mutate_at(c('Estimate', 'Std. Error', 't value'), ~(scale(.) %>% as.vector))
+# df2 <- dt %>% mutate_all(~(scale(.) %>% as.vector))
+# df2
+# # # Calculate SD and mean
+# # sd(df2$Estimate)
+# # mean(df2$Estimate)
+# model2$coefficients <- df2
+
 # Coefficient plots
 # cm <- c("dem_65over" = "% older 65",
 #        'dem_25under' = '% younger than 25')
