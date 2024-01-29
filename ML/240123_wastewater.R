@@ -109,7 +109,7 @@ model2 <- summary(lm(formula, data = covid_a))
 # cm <- c("dem_65over" = "% older 65",
 #        'dem_25under' = '% younger than 25')
 # coef_map = cm,
-modelplot(model2, size=1) + # color="blue",, coef_omit=c(1, 2)
+modelplot(model2, coef_omit=c(1, 2), size=1) + # color="blue",
   labs(title="Coefficient plots plots of regression of controls predicting COVID ouctomes and segregation") +
   theme_linedraw() +
   geom_vline(aes(xintercept = 0), color="red") +
