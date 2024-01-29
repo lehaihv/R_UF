@@ -30,15 +30,15 @@ options(max.print=999999)
 # data_path     <- "/blue/wjoo/project/wastewater/data/"
 # result_path   <- "/blue/wjoo/project/wastewater/result/"
 
-# # MacOS path
-# raw_path     <- "~/Documents/GitHub/R_UF/ML/data/raw/"
-# data_path     <- "~/Documents/GitHub/R_UF/ML/data/data/"
-# result_path   <- "~/Documents/GitHub/R_UF/ML/data/result/"
+# MacOS path
+raw_path     <- "~/Documents/GitHub/R_UF/ML/data/raw/"
+data_path     <- "~/Documents/GitHub/R_UF/ML/data/data/"
+result_path   <- "~/Documents/GitHub/R_UF/ML/data/result/"
 
-# Windows path
-raw_path     <- "D:/GitHub/R_UF/ML/data/raw/"
-data_path     <- "D:/GitHub/R_UF/ML/data/data/"
-result_path   <- "D:/GitHub/R_UF/ML/data/result/"
+# # Windows path
+# raw_path     <- "D:/GitHub/R_UF/ML/data/raw/"
+# data_path     <- "D:/GitHub/R_UF/ML/data/data/"
+# result_path   <- "D:/GitHub/R_UF/ML/data/result/"
 
 # set seed
 set.seed(1234)
@@ -88,7 +88,7 @@ pnas3 <- grep("rwj_", names(covid_a), value=TRUE)
 state <- grep("state_", names(covid_a), value=TRUE)
 
 # Model 2: Linear Regression outcome ~ seg_reldiv_all + pnas_
-formula <- paste(c("outcome_PNAS ~ seg_reldiv_all", state, pnas), collapse = "+")
+formula <- paste(c("outcome_PNAS ~ seg_reldiv_all", pnas), collapse = "+")
 # , pnas1, pnas2, pnas3
 model2 <- summary(lm(formula, data = covid_a))
 
