@@ -88,7 +88,7 @@ pnas3 <- grep("rwj_", names(covid_a), value=TRUE)
 state <- grep("state_", names(covid_a), value=TRUE)
 
 # Model 2: Linear Regression outcome ~ seg_reldiv_all + pnas_
-formula <- paste(c("outcome_PNAS ~ seg_reldiv_all", pnas), collapse = "+")
+formula <- paste(c("outcome_PNAS ~ seg_reldiv_all", state, pnas, pnas1, pnas2), collapse = "+")
 # , pnas1, pnas2, pnas3
 model2 <- summary(lm(formula, data = covid_a))
 
@@ -109,7 +109,7 @@ model2 <- summary(lm(formula, data = covid_a))
 # cm <- c("dem_65over" = "% older 65",
 #        'dem_25under' = '% younger than 25')
 # coef_map = cm,
-modelplot(model2, coef_omit=c(1, 2), size=1) + # color="blue",
+modelplot(model2, coef_omit=c(1:48, 49, 61), size=1) + # color="blue",coef_omit=c(1, 2)
   labs(title="Coefficient plots plots of regression of controls predicting COVID ouctomes and segregation") +
   theme_linedraw() +
   geom_vline(aes(xintercept = 0), color="red") +
