@@ -72,6 +72,7 @@ covid <- merge(torrats, covid, by="fips")
 
 cor(covid$c_r_log_nyt, covid$cumulative_confirmed_cases_by_100k_pop)
 cor(covid$d_r_log_nyt, covid$cumulative_deaths_by_100k_pop)
+cor(covid$cumulative_confirmed_cases_by_100k_pop, covid$cumulative_deaths_by_100k_pop)
 
 ##### analysis 1. deaths per 100k (measured by September 30, 2020) PNAS
 covid_a <- copy(covid)
@@ -154,6 +155,7 @@ covid <- merge(torrats, covid, by="fips")
 
 cor(covid$c_r_log_nyt, covid$cumulative_confirmed_cases_by_100k_pop)
 cor(covid$d_r_log_nyt, covid$cumulative_deaths_by_100k_pop)
+cor(covid$cumulative_confirmed_cases_by_100k_pop, covid$cumulative_deaths_by_100k_pop)
 
 covid_a <- copy(covid)
 covid_a$outcome_JH_full <- covid_a$cumulative_deaths_by_100k_pop
