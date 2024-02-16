@@ -147,7 +147,7 @@ modelplot(model22, coef_omit=c(1, 2), size=1) + #color="green",
   scale_color_manual(values = c("grey", "green"))
 
 #### analysis 3. cumulative deaths deaths per 100k (measured by March 2023)
-covid <- fread(paste0(raw_path, "US_Covid_19_data_by_county_log.csv")) #"US_Covid_19_data_by_county.csv"))
+covid <- fread(paste0(raw_path, "US_Covid_19_data_by_county.csv")) #"US_Covid_19_data_by_county_log.csv")) #"US_Covid_19_data_by_county.csv"))
 colnames(covid) <- tolower(colnames(covid))
 covid <- covid[, c("fips", "cumulative_deaths_by_100k_pop", "cumulative_confirmed_cases_by_100k_pop")]
 
