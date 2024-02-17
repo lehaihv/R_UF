@@ -7,6 +7,7 @@ library(writexl)
 ## load data
 ## data1 <- read_excel("D:/GitHub/R_UF/covid_29019_cc.xlsx")
 ## data_cc <- read_excel("~/Documents/GitHub/R_UF/paper_data.xlsx")
+# data_cvs <- read.csv("~/Documents/GitHub/R_UF/cdc-nwss-restricted-dataset-final.csv")
 data_cc <- read_excel("~/Documents/GitHub/R_UF/Covid_SantaCruz_cc.xlsx")  ## After Dec 2021
 # data_cvs <- read.csv("~/Documents/GitHub/R_UF/us_confirmed.csv")
 # data_cc <- read_excel("~/Documents/GitHub/R_UF/Covid_kauai_cc.xlsx")
