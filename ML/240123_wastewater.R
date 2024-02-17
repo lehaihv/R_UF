@@ -66,13 +66,14 @@ torrats <- torrats[,fips:=as.numeric(fips)]
 
 covid <- fread(paste0(raw_path, "US_Covid_19_data_by_county_30092020log.csv")) #"US_Covid_19_data_by_county.csv"))
 colnames(covid) <- tolower(colnames(covid))
-covid <- covid[, c("fips", "cumulative_deaths_by_100k_pop", "cumulative_confirmed_cases_by_100k_pop")]
+covid <- covid[, c("fips", "cumulative_deaths_by_100k_pop", "cumulative_confirmed_cases_by_100k_pop", "cumulative_confirmed_cases_by_100k_pop_log")]
 
 covid <- merge(torrats, covid, by="fips")
 
 cor(covid$c_r_log_nyt, covid$cumulative_confirmed_cases_by_100k_pop)
 cor(covid$d_r_log_nyt, covid$cumulative_deaths_by_100k_pop)
 cor(covid$cumulative_confirmed_cases_by_100k_pop, covid$cumulative_deaths_by_100k_pop)
+cor(covid$cumulative_confirmed_cases_by_100k_pop_log, covid$cumulative_deaths_by_100k_pop)
 
 ##### analysis 1. deaths per 100k (measured by September 30, 2020) PNAS
 covid_a <- copy(covid)
