@@ -153,7 +153,8 @@ modelplot(model22, coef_omit=c(1, 2), size=1) + #color="green",
 #### analysis 3. cumulative deaths deaths per 100k (measured by March 2023)
 covid <- fread(paste0(raw_path, "US_Covid_19_data_by_county_log.csv")) #"US_Covid_19_data_by_county.csv"))
 colnames(covid) <- tolower(colnames(covid))
-covid <- covid[, c("fips", "cumulative_deaths_by_100k_pop", "cumulative_confirmed_cases_by_100k_pop", "cumulative_confirmed_cases_by_100k_pop_log")]
+covid <- covid[, c("fips", "cumulative_deaths_by_100k_pop", "cumulative_confirmed_cases_by_100k_pop", "cumulative_confirmed_cases_by_100k_pop_log"
+                   , "cumulative_deaths_by_03092023", "cumulative_confirmed_cases_by_03092023")]
 
 covid <- merge(torrats, covid, by="fips")
 
@@ -166,7 +167,14 @@ covid_a$outcome_JH_full <- covid_a$cumulative_deaths_by_100k_pop
 covid_a <- covid_a[, -c("fips", "cumulative_confirmed_cases_by_100k_pop", "cumulative_deaths_by_100k_pop", "c_r_log_nyt", "d_r_log_nyt")]
 model13 <- summary(lm(outcome_JH_full ~ seg_reldiv_all, data = covid_a))
 #####
-model13 <- summary(lm(covid$cumulative_deaths_by_100k_pop ~ cumulative_confirmed_cases_by_100k_pop_log, data = covid_a))
+model13 <- summary(lm(covid$cumulative_deaths_by_100k_pop_log ~ cumulative_confirmed_cases_by_100k_pop_log, data = covid))
+model13 <- summary(lm(covid$cumulative_deaths_by_03092023 ~ cumulative_confirmed_cases_by_03092023, data = covid))
+model13 <- summary(lm(cumulative_confirmed_cases_by_03092023 ~ covid$cumulative_deaths_by_03092023, data = covid))
+model13 <- summary(lm(covid$cumulative_deaths_by_100k_pop ~ cumulative_confirmed_cases_by_100k_pop, data = covid))
+
+#####plot
+plot(covid$cumulative_deaths_by_100k_pop, pch = 16, col = "blue") #Plot the results
+abline(model13) #Add a regression line
 
 # Get all PNAS parameters of Fig 1
 
