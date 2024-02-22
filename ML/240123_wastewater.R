@@ -161,6 +161,7 @@ covid <- merge(torrats, covid, by="fips")
 cor(covid$c_r_log_nyt, covid$cumulative_confirmed_cases_by_100k_pop)
 cor(covid$d_r_log_nyt, covid$cumulative_deaths_by_100k_pop)
 cor(covid$cumulative_confirmed_cases_by_100k_pop_log, covid$cumulative_deaths_by_100k_pop)
+cor(covid$cumulative_deaths_by_100k_pop, covid$cumulative_confirmed_cases_by_100k_pop)
 
 covid_a <- copy(covid)
 covid_a$outcome_JH_full <- covid_a$cumulative_deaths_by_100k_pop
@@ -170,10 +171,10 @@ model13 <- summary(lm(outcome_JH_full ~ seg_reldiv_all, data = covid_a))
 model13 <- summary(lm(covid$cumulative_deaths_by_100k_pop_log ~ cumulative_confirmed_cases_by_100k_pop_log, data = covid))
 model13 <- summary(lm(covid$cumulative_deaths_by_03092023 ~ cumulative_confirmed_cases_by_03092023, data = covid))
 model13 <- summary(lm(cumulative_confirmed_cases_by_03092023 ~ covid$cumulative_deaths_by_03092023, data = covid))
-model13 <- summary(lm(covid$cumulative_deaths_by_100k_pop ~ cumulative_confirmed_cases_by_100k_pop, data = covid))
+model13 <- summary(lm(covid$cumulative_deaths_by_100k_pop ~ covid$cumulative_confirmed_cases_by_100k_pop, data = covid))
 
 #####plot
-plot(covid$cumulative_deaths_by_100k_pop, pch = 16, col = "blue") #Plot the results
+plot(covid$cumulative_confirmed_cases_by_100k_pop, covid$cumulative_deaths_by_100k_pop, pch = 16, col = "blue") #Plot the results
 abline(model13) #Add a regression line
 
 # Get all PNAS parameters of Fig 1
