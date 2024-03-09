@@ -36,8 +36,13 @@ result_path   <- "~/Documents/GitHub/R_UF/ML/WWScan/"
 set.seed(1234)
 
 # load data
-covid <- read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx")
-# colnames(covid) <- tolower(colnames(covid))
+covid <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 1))
+covid1 <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 2))
+covid2 <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 3))
+df_to_join <- unique(covid1)
+covid3 <- inner_join(covid, df_to_join, by = "county_names")
+covid_final <- inner_join(covid2, covid3, by = "key_sewershed")
+
 
 
 
