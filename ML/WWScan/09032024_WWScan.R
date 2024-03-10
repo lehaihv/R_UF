@@ -37,11 +37,16 @@ set.seed(1234)
 
 # load data
 covid <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 1))
-covid1 <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 2))
+covid <- covid[, -c("population_served")]
+covid %>% distinct()
+# covid1 <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 2))
 covid2 <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 3))
-df_to_join <- unique(covid1)
-covid3 <- inner_join(covid, df_to_join, by = "county_names")
-covid_final <- inner_join(covid2, covid3, by = "key_sewershed")
+# df_to_join <- unique(covid1)
+covid3 <- inner_join(covid %>% distinct(), covid2, by = "key_sewershed") #"county_names")
+covid3 <- covid3[, -c("key_sewershed")]
+covid3 %>% distinct()
+#covid_final <- inner_join(covid2, covid3, by = "key_sewershed")
+write_xlsx(covid3 %>% distinct(), "~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases.xlsx")
 
 
 
