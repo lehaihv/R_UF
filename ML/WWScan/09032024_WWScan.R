@@ -88,17 +88,18 @@ covid_concen <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/work
 buffer_concen_unique= covid_concen %>% distinct(county_names, .keep_all = TRUE)
 buffer_concen_full = covid_concen %>% distinct()
 quantile_concen_cases_75 = 0
-for (x in 1:226) { #815 226
-  covid_concen_county <- buffer_concen_full[county_names == buffer_unique$county_names[x]] #buffer_concen_unique
+concen_range = 815 #815 226
+for (x in 1:concen_range) { 
+  covid_concen_county <- buffer_concen_full[county_names == buffer_concen_unique$county_names[x]] #buffer_unique
   quantile_concen_cases_75[x] = quantile(covid_concen_county$pcr_target_flowpop_lin, probs = c(0.75)) #,0.375,0.625,0.875))
   quantile_concen_cases_75[x] = quantile_concen_cases_75[x] / 2000000
 }
 
 # create data frame
-covid_concen_county_names <- 1:226 #815 # buffer_concen_unique$county_names #
+covid_concen_county_names <- 1:concen_range # buffer_concen_unique$county_names # buffer_unique$county_names #
 quantile_concen <- quantile_concen_cases_75
 quantile_covid_concen <- data.frame(covid_concen_county_names, quantile_concen)
-#write_xlsx(quantile_covid_concen, "~/Documents/GitHub/R_UF/ML/WWScan/Virus_concentration_815_counties.xlsx")
+# write_xlsx(quantile_covid_concen, "~/Documents/GitHub/R_UF/ML/WWScan/Virus_concentration_226_counties.xlsx")
 
 # boxplot(order ~ quantile_covid, data = quantile_covid_case,
 #         main = "Displacement by Gear",
@@ -106,25 +107,41 @@ quantile_covid_concen <- data.frame(covid_concen_county_names, quantile_concen)
 #         ylab = "Displacement")
 # boxplot(quantile_covid_case$quantile_covid, outline=FALSE)
 
-plot(covid_concen_county_names, quantile_concen, main="Scatterplot Virus Concentration 75th Percentile",
-     xlab="", ylab="75th Percentile Virus Concentration in Wastewater", pch=19, col="darkgreen", cex=0.75)
+plot(covid_concen_county_names, quantile_concen, 
+     main="Scatterplot Virus Concentration 75th Percentile",
+     xlab="", ylab="75th Percentile Virus Concentration in Wastewater", 
+     pch=19, col="darkgreen", cex=0.75)
 
 # Smooth fit
-lines(lowess(covid_concen_county_names, quantile_concen), col = "blue", lwd = 3)
+lines(lowess(covid_concen_county_names, quantile_concen, f=0.01), col = "blue", lwd = 3)
 
 # Add plot of CDC cases
 # points(x2, y2, col = "green", pch = 19)
 points(covid_case_county_names, quantile_covid, pch=19, col="red", cex=0.75)
 # Smooth fit
-lines(lowess(covid_case_county_names, quantile_covid), col = "yellow", lwd = 3)
+lines(lowess(covid_case_county_names, quantile_covid, f=0.01), col = "yellow", lwd = 3)
+
+# Legend
+legend("topleft", legend = c("Virus concentration", "Lowess Virus concentration", 
+                              "CDC covid cases", "Lowess CDC covid cases"),
+       fill = c("darkgreen", "blue", "red", "yellow"))
+
 
 
 boxplot(quantile_concen_cases_75, main="Boxplot Virus Concentration 75th Percentile",
         xlab="", ylab="75th Percentile Virus Concentration in Wastewater", outline=FALSE)
 
+
 # Multiple Box plot
 # boxplot(quantile_cases_75, outline=FALSE, add=TRUE, border="red")
+set.seed(20000)             
+quantile_cases_75[227:815] = 0
+data <- data.frame( Virus_Concentration = quantile_concen_cases_75, 
+                    CDC_Cases = quantile_cases_75 
+                  ) 
 
+# Applying boxplot function 
+boxplot(data, outline=FALSE)  
 
 
 
