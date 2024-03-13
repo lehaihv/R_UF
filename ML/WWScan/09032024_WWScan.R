@@ -37,12 +37,16 @@ set.seed(1234)
 
 ##################################################
 # load data covid cases
-covid_key_sewershed <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 1))
-covid_key_sewershed <- covid_key_sewershed[, -c("population_served")]
-covid_cases <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 3))
+# covid_key_sewershed <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 1))
+# covid_key_sewershed <- covid_key_sewershed[, -c("population_served")]
+# covid_cases <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 3))
 
-covid_cases_cdc <- inner_join(covid_key_sewershed %>% distinct(), covid_cases, by = "key_sewershed") #"county_names")
-covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed")]
+# covid_cases_cdc <- inner_join(covid_key_sewershed %>% distinct(), covid_cases, by = "key_sewershed") #"county_names")
+# covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed")]
+# write_xlsx(covid_cases_cdc, "~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_per100k.xlsx")
+
+covid_cases_cdc <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_per100k.xlsx", sheet = 1))
+#covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed", "population_served")]
 
 # covid_cases_cdc %>% distinct()
 # covid_final <- inner_join(covid2, covid3, by = "key_sewershed")
@@ -60,7 +64,7 @@ buffer_unique= covid_cases_cdc %>% distinct(county_names, .keep_all = TRUE)
 buffer_full = covid_cases_cdc %>% distinct()
 for (x in 1:226) {
   covid_county <- buffer_full[county_names == buffer_unique$county_names[x]]
-  quantile_cases_75[x] = quantile(covid_county$cases_by_cdc_case_earliest_date, probs = c(0.75)) #,0.375,0.625,0.875))
+  quantile_cases_75[x] = quantile(covid_county$cases_by_cdc_case_earliest_date_per100kpop, probs = c(0.75)) #,0.375,0.625,0.875))
   # filenames = paste("~/Documents/GitHub/R_UF/ML/WWScan/", buffer_unique$county_names[x], ".xlsx")
   # write_xlsx(covid_county, filenames)
 }
@@ -68,7 +72,7 @@ for (x in 1:226) {
 covid_case_county_names <- 1:226 # buffer_unique$county_names #
 quantile_covid <- quantile_cases_75
 quantile_covid_case <- data.frame(covid_case_county_names, quantile_covid)
-# write_xlsx(quantile_covid_case, "~/Documents/GitHub/R_UF/ML/WWScan/CDC_Covid_cases_226_counties.xlsx")
+# write_xlsx(quantile_covid_case, "~/Documents/GitHub/R_UF/ML/WWScan/CDC_Covid_cases_per100kpop_226_counties.xlsx")
 
 # boxplot(order ~ quantile_covid, data = quantile_covid_case,
 #         main = "Displacement by Gear",
@@ -77,12 +81,12 @@ quantile_covid_case <- data.frame(covid_case_county_names, quantile_covid)
 # boxplot(quantile_covid_case$quantile_covid, outline=FALSE)
 
 plot(covid_case_county_names, quantile_covid, main="Scatterplot CDC Cases 75th Percentile",
-     xlab="", ylab="75th Percentile Covid Cases by CDC", pch=19, col="darkgreen", cex=0.75)
+     xlab="226 counties", ylab="75th Percentile Covid Cases by CDC", pch=19, col="darkgreen", cex=0.75)
 # Smooth fit
 lines(lowess(covid_case_county_names, quantile_covid, f=0.001), col = "yellow", lwd = 3) # f=0.01
 
 boxplot(quantile_cases_75, main="Boxplot CDC Cases 75th Percentile",
-        xlab="", ylab="75th Percentile Covid Cases by CDC", outline=FALSE)
+        xlab="226 counties", ylab="75th Percentile Covid Cases by CDC", outline=FALSE)
 
 ##################################################
 # loading data virus concentration for only 226 counties (same counites with CDC_cases)
@@ -115,13 +119,13 @@ plot(covid_concen_county_names, quantile_concen,
      pch=19, col="darkgreen", cex=0.75)
 
 # Smooth fit
-lines(lowess(covid_concen_county_names, quantile_concen, f=0.15), col = "blue", lwd = 3)
+lines(lowess(covid_concen_county_names, quantile_concen, f=0.001), col = "blue", lwd = 3)
 
 # Add plot of CDC cases
 # points(x2, y2, col = "green", pch = 19)
 points(covid_case_county_names, quantile_covid, pch=19, col="red", cex=0.75)
 # Smooth fit
-lines(lowess(covid_case_county_names, quantile_covid, f=0.15), col = "yellow", lwd = 3)
+lines(lowess(covid_case_county_names, quantile_covid, f=0.001), col = "yellow", lwd = 3)
 
 # Legend
 legend("topleft", legend = c("Virus concentration", "Lowess Virus concentration", 
@@ -131,19 +135,20 @@ legend("topleft", legend = c("Virus concentration", "Lowess Virus concentration"
 
 
 boxplot(quantile_concen_cases_75, main="Boxplot Virus Concentration 75th Percentile",
-        xlab="", ylab="75th Percentile Virus Concentration in Wastewater", outline=FALSE)
+        xlab="226 counties", ylab="75th Percentile Virus Concentration in Wastewater", outline=FALSE)
 
 
 # Multiple Box plot
 # boxplot(quantile_cases_75, outline=FALSE, add=TRUE, border="red")
-set.seed(20000)             
+# set.seed(20000)             
 #quantile_cases_75[227:815] = 0
 data <- data.frame( Virus_Concentration = quantile_concen_cases_75, 
-                    CDC_Cases = quantile_cases_75 
+                    CDC_Cases_per_100k_pop = quantile_cases_75 
 ) 
 
 # Applying boxplot function 
-boxplot(data, outline=FALSE)  
+boxplot(data, main="Boxplot 75th Percentile of Virus Concentration and CDC_cases_per_100k_pop of 226 counties",
+        xlab="", ylab="75th Percentile", outline=FALSE)  
 
 ##################################################
 # loading data virus concentration of 815 counties
@@ -204,7 +209,8 @@ data <- data.frame( Virus_Concentration = quantile_concen_cases_75,
                   ) 
 
 # Applying boxplot function 
-boxplot(data, outline=FALSE)  
+boxplot(data, main="Boxplot 75th Percentile of Virus Concentration (815 counties) and CDC_cases_per_100k_pop (226 counties)",
+        xlab="", ylab="75th Percentile", outline=FALSE)  
 
 
 
