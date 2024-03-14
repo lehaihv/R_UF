@@ -7,20 +7,20 @@
 library(data.table)
 setDTthreads(0)
 library(bit64)
-library(readstata13)
+# library(readstata13)
 
 # devtools::install_github("MartinSpindler/hdm")
 library(hdm)
 
 library(fastDummies)
 
-library(arm)           # coefplot
-library(modelsummary)  # model plot
+#library(arm)           # coefplot
+#library(modelsummary)  # model plot
 library(dplyr)
 library(ggplot2)
 
-library(dplyr)
-library (tibble)
+# library(dplyr)
+# library (tibble)
 
 library(readxl)
 library(writexl)
@@ -37,16 +37,16 @@ set.seed(1234)
 
 ##################################################
 # load data covid cases
-# covid_key_sewershed <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 1))
-# covid_key_sewershed <- covid_key_sewershed[, -c("population_served")]
-# covid_cases <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 3))
+covid_key_sewershed <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 1))
+covid_key_sewershed <- covid_key_sewershed[, -c("population_served")]
+covid_cases <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 3))
 
-# covid_cases_cdc <- inner_join(covid_key_sewershed %>% distinct(), covid_cases, by = "key_sewershed") #"county_names")
-# covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed")]
+covid_cases_cdc <- inner_join(covid_key_sewershed %>% distinct(), covid_cases, by = "key_sewershed") #"county_names")
+covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed")]
 # write_xlsx(covid_cases_cdc, "~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_per100k.xlsx")
 
-covid_cases_cdc <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_per100k.xlsx", sheet = 1))
-#covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed", "population_served")]
+# covid_cases_cdc <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_per100k.xlsx", sheet = 1))
+# covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed", "population_served")]
 
 # covid_cases_cdc %>% distinct()
 # covid_final <- inner_join(covid2, covid3, by = "key_sewershed")
@@ -59,20 +59,30 @@ covid_cases_cdc <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/c
 # df_to_join <- unique(covid1)
 # buffer_unique$county_names[x]
 
-quantile_cases_75 = 0
+quantile_cdc_cases_66 = 0
+quantile_cdc_cases_33 = 0
 buffer_unique= covid_cases_cdc %>% distinct(county_names, .keep_all = TRUE)
 buffer_full = covid_cases_cdc %>% distinct()
+
+###################################################
+# extract data CDC_covid_case of county 6001
+# covid_county_6001 <- buffer_full[county_names == 6001]
+# write_xlsx(covid_county_6001, "~/Documents/GitHub/R_UF/ML/WWScan/CDC_Covid_cases_county_6001.xlsx")
+###################################################
+
 for (x in 1:226) {
   covid_county <- buffer_full[county_names == buffer_unique$county_names[x]]
-  quantile_cases_75[x] = quantile(covid_county$cases_by_cdc_case_earliest_date_per100kpop, probs = c(0.75)) #,0.375,0.625,0.875))
+  quantile_cdc_cases_33[x] = quantile(covid_county$cases_by_cdc_case_earliest_date, probs = c(0.33)) #,0.375,0.625,0.875))
+  quantile_cdc_cases_66[x] = quantile(covid_county$cases_by_cdc_case_earliest_date, probs = c(0.66))
   # filenames = paste("~/Documents/GitHub/R_UF/ML/WWScan/", buffer_unique$county_names[x], ".xlsx")
   # write_xlsx(covid_county, filenames)
 }
 # create data frame
-covid_case_county_names <- 1:226 # buffer_unique$county_names #
-quantile_covid <- quantile_cases_75
-quantile_covid_case <- data.frame(covid_case_county_names, quantile_covid)
-# write_xlsx(quantile_covid_case, "~/Documents/GitHub/R_UF/ML/WWScan/CDC_Covid_cases_per100kpop_226_counties.xlsx")
+covid_case_county_names <- buffer_unique$county_names #1:226 #
+# quantile_covid_66 <- quantile_cdc_cases_66
+# quantile_covid_33 <- quantile_cdc_cases_33
+quantile_covid_case <- data.frame(covid_case_county_names, quantile_cdc_cases_33, quantile_cdc_cases_66)
+write_xlsx(quantile_covid_case, "~/Documents/GitHub/R_UF/ML/WWScan/CDC_Covid_cases_quantile_33_66_226_counties.xlsx")
 
 # boxplot(order ~ quantile_covid, data = quantile_covid_case,
 #         main = "Displacement by Gear",
@@ -93,19 +103,29 @@ boxplot(quantile_cases_75, main="Boxplot CDC Cases 75th Percentile",
 covid_concen <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 2))
 buffer_concen_unique= covid_concen %>% distinct(county_names, .keep_all = TRUE)
 buffer_concen_full = covid_concen %>% distinct()
-quantile_concen_cases_75 = 0
+quantile_wastewater_concen_33 = 0
+quantile_wastewater_concen_66 = 0
 concen_range = 226 #815 226
+
+###################################################
+# extract virus concentration data of county 6001
+virus_county_6001 <- buffer_concen_full[county_names == 6001]
+write_xlsx(virus_county_6001, "~/Documents/GitHub/R_UF/ML/WWScan/Virus_concentration_county_6001.xlsx")
+###################################################
+
 for (x in 1:concen_range) { 
   covid_concen_county <- buffer_concen_full[county_names == buffer_unique$county_names[x]] #buffer_concen_unique
-  quantile_concen_cases_75[x] = quantile(covid_concen_county$pcr_target_flowpop_lin, probs = c(0.75)) #,0.375,0.625,0.875))
-  quantile_concen_cases_75[x] = quantile_concen_cases_75[x] / 2000000
+  quantile_wastewater_concen_33[x] = quantile(covid_concen_county$pcr_target_flowpop_lin, probs = c(0.33)) #,0.375,0.625,0.875))
+  # quantile_wastewater_concen_33[x] = quantile_wastewater_concen_33[x] / 2000000
+  quantile_wastewater_concen_66[x] = quantile(covid_concen_county$pcr_target_flowpop_lin, probs = c(0.66)) #,0.375,0.625,0.875))
+  # quantile_wastewater_concen_66[x] = quantile_wastewater_concen_66[x] / 2000000
 }
 
 # create data frame
-covid_concen_county_names <- 1:concen_range # buffer_concen_unique$county_names # buffer_unique$county_names #
-quantile_concen <- quantile_concen_cases_75
-quantile_covid_concen <- data.frame(covid_concen_county_names, quantile_concen)
-# write_xlsx(quantile_covid_concen, "~/Documents/GitHub/R_UF/ML/WWScan/Virus_concentration_226_counties.xlsx")
+covid_concen_county_names <- buffer_unique$county_names #1:concen_range # buffer_concen_unique$county_names # 
+# quantile_concen <- quantile_concen_cases_75
+quantile_virus_concen <- data.frame(covid_concen_county_names, quantile_wastewater_concen_33, quantile_wastewater_concen_66)
+write_xlsx(quantile_virus_concen, "~/Documents/GitHub/R_UF/ML/WWScan/Virus_concentration_quantile_33_66_226_counties.xlsx")
 
 # boxplot(order ~ quantile_covid, data = quantile_covid_case,
 #         main = "",
