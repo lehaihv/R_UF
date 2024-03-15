@@ -67,8 +67,12 @@ buffer_full = covid_cases_cdc %>% distinct()
 ###################################################
 # extract data CDC_covid_case of county 6001
 # county_no = 6001
+H_days = 0
+M_days = 0
+L_days = 0
+Risk_level_county_name = 0
 for (z in 1:226) {
-  #z = 127
+  #z = 1
   covid_county <- buffer_full[county_names == buffer_unique$county_names[z]] #1
   quantile_cdc_cases_33 = quantile(covid_county$cases_by_cdc_case_earliest_date, probs = c(0.33))
   quantile_cdc_cases_66 = quantile(covid_county$cases_by_cdc_case_earliest_date, probs = c(0.66))
@@ -77,7 +81,7 @@ for (z in 1:226) {
   covid_county.cases_by_cdc_case_earliest_date <- arrange(covid_county, sample_collect_date)
   covid_county <- covid_county.cases_by_cdc_case_earliest_date
   covid_county <- covid_county[, -c("county_names")]
-  # length(covid_county$sample_collect_date)
+  length(covid_county$sample_collect_date)
   full_date <- seq(from = as.Date(covid_county$sample_collect_date[1]), 
                        to = as.Date(covid_county$sample_collect_date[length(covid_county$sample_collect_date)]), by = 'day') # V
   # create data frame
@@ -134,39 +138,47 @@ for (z in 1:226) {
     }
     
     # Calculate categories
-    H_days = 0
-    M_days = 0
-    L_days = 0
+    H_days[z] = 0
+    M_days[z] = 0
+    L_days[z] = 0
+    Risk_level_county_name[z] = 0
+    #z=1
     for (x in 22:full_range) {
+      Risk_level_county_name[z] = buffer_unique$county_names[z]
       if((as.numeric(full_cdc_cases$levels[x]) + as.numeric(full_cdc_cases$trends[x])) > as.numeric(4)) { 
         full_cdc_cases$categories[x] = "H"
-        H_days = H_days + 1 
+        H_days[z] = H_days[z] + 1 
       } else if((as.numeric(full_cdc_cases$levels[x]) + as.numeric(full_cdc_cases$trends[x])) < as.numeric(3)){ 
         full_cdc_cases$categories[x] = "L"
-        L_days = L_days + 1
+        L_days[z] = L_days[z] + 1
       }
       else{ full_cdc_cases$categories[x] = "M"
-            M_days = M_days + 1
+            M_days[z] = M_days[z] + 1
     }
   }
   
   # create data frame
-  count_days <- data.frame(H_days, M_days, L_days)
-  full_cdc_cases <- cbind(full_cdc_cases, count_days)
+  count_days <- data.frame(Risk_level_county_name, H_days, M_days, L_days)
+  #write_xlsx(count_days, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_levels_CDC_cases_226_counties.xlsx")
   
   # write to file
   # filenames = paste("~/Documents/GitHub/R_UF/ML/WWScan/Auto_risk/Risk_levels_CDC_cases_county_", buffer_unique$county_names[z], ".xlsx")
   # write_xlsx(full_cdc_cases, filenames)
   # write count_days to 1 file
-  H_days = 0
-  M_days = 0
-  L_days = 0
-  buffer_unique$county_names[1]
-  filenames = paste("~/Documents/GitHub/R_UF/ML/WWScan/Auto_risk/Risk_levels_CDC_cases_county_", buffer_unique$county_names[z], ".xlsx")
-  write_xlsx(full_cdc_cases, filenames)
-  
   }
 }
+# Plot risk levels data
+set.seed(1234)                                             
+df <- data.frame(HIGH = H_days)#,
+                 # Medium = M_days,
+                 # LOW = L_days)
+plot.ts(df, main="Number of days in each risk categories of CDC_cases data",
+        xlab="226 counties", ylab="", col="darkgreen")
+# grid(nx = 20, ny = 20,
+#      lty = 2,      # Grid line type
+#      col = "gray", # Grid line color
+#      lwd = 2)      # Grid line width
+
 ###################################################
 ###################################################
 
@@ -206,6 +218,134 @@ buffer_concen_full = covid_concen %>% distinct()
 quantile_wastewater_concen_33 = 0
 quantile_wastewater_concen_66 = 0
 concen_range = 226 #815 226
+
+###################################################
+###################################################
+
+H_days_virus = 0
+M_days_virus = 0
+L_days_virus = 0
+Risk_level_county_name_virus = 0
+for (z in 1:226) {
+  #z = 10
+  virus_county <- buffer_concen_full[county_names == buffer_unique$county_names[z]] #1
+  if (length(virus_county$sample_collect_date) > 22) {
+    quantile_cdc_cases_33 = quantile(virus_county$pcr_target_flowpop_lin, probs = c(0.33))
+    quantile_cdc_cases_66 = quantile(virus_county$pcr_target_flowpop_lin, probs = c(0.66))
+    # write_xlsx(covid_county_6001, "~/Documents/GitHub/R_UF/ML/WWScan/CDC_Covid_cases_county_6001.xlsx")
+    # Arranging name according to the age
+    virus_county.pcr_target_flowpop_lin <- arrange(virus_county, sample_collect_date)
+    virus_county <- virus_county.pcr_target_flowpop_lin
+    virus_county <- virus_county[, -c("county_names")]
+    # length(virus_county$sample_collect_date)
+    full_date <- seq(from = as.Date(virus_county$sample_collect_date[1]), 
+                     to = as.Date(virus_county$sample_collect_date[length(virus_county$sample_collect_date)]), by = 'day') # V
+    # create data frame
+    sample_collect_date <- full_date
+    full_dates <- data.frame(sample_collect_date)
+    
+    # get full dates with cases, NA will be assigned 0
+    full_cdc_cases = merge(x = full_dates, y = virus_county, by = "sample_collect_date", all = TRUE)
+    full_cdc_cases[is.na(full_cdc_cases)] <- 0
+    
+    # Lowess smoothing data
+    # # Plot with raw data
+    # plot(full_cdc_cases$sample_collect_date, full_cdc_cases$cases_by_cdc_case_earliest_date, main="Scatterplot CDC Cases 75th Percentile",
+    #      xlab="226 counties", ylab="75th Percentile Covid Cases by CDC", pch=19, col="darkgreen", cex=0.75)
+    # # Smooth fit
+    # lines(lowess(full_cdc_cases$sample_collect_date, full_cdc_cases$cases_by_cdc_case_earliest_date, f=0.001), col = "yellow", lwd = 3) # f=0.01
+    lowess_CDC_cases = lowess(full_cdc_cases$sample_collect_date, full_cdc_cases$pcr_target_flowpop_lin, f=0.001)
+    
+    # add lowess data back
+    full_cdc_cases <- cbind(full_cdc_cases, lowess_data = lowess_CDC_cases$y)
+    # Plot with lowess data
+    # plot(full_cdc_cases$sample_collect_date, full_cdc_cases$lowess_data, main="Scatterplot CDC Cases 75th Percentile",
+    #      xlab="226 counties", ylab="75th Percentile Covid Cases by CDC", pch=19, col="darkgreen", cex=0.75)
+    
+    # add Risk assessment columns to data levels, trends, categories
+    # create data frame
+    levels <- 0
+    trends <- 0
+    categories <- 0
+    Risk <- data.frame(levels, trends, categories)
+    full_cdc_cases <- cbind(full_cdc_cases, Risk)
+    # Calculate levels
+    full_range = length(full_cdc_cases$sample_collect_date)
+    if (full_range > 22) {
+      for (x in 22:full_range) {
+        if(full_cdc_cases$lowess_data[x] > quantile_cdc_cases_66){ 
+          full_cdc_cases$levels[x] = 6
+        } else if(full_cdc_cases$lowess_data[x] < quantile_cdc_cases_33){ 
+          full_cdc_cases$levels[x] = 2
+        }
+        else{ full_cdc_cases$levels[x] = 4
+        }
+      }
+      
+      # Calculate trends
+      for (x in 22:full_range) {
+        if(full_cdc_cases$lowess_data[x] > full_cdc_cases$lowess_data[x-21] * 1.2) { 
+          full_cdc_cases$trends[x] = 1
+        } else if(full_cdc_cases$lowess_data[x] < full_cdc_cases$lowess_data[x-21] * 0.8){ 
+          full_cdc_cases$trends[x] = -1
+        }
+        else{ full_cdc_cases$trends[x] = 0
+        }
+      }
+      
+      # Calculate categories
+      H_days_virus[z] = 0
+      M_days_virus[z] = 0
+      L_days_virus[z] = 0
+      Risk_level_county_name_virus[z] = 0
+      #z=1
+      for (x in 22:full_range) {
+        Risk_level_county_name_virus[z] = buffer_unique$county_names[z]
+        if((as.numeric(full_cdc_cases$levels[x]) + as.numeric(full_cdc_cases$trends[x])) > as.numeric(4)) { 
+          full_cdc_cases$categories[x] = "H"
+          H_days_virus[z] = H_days_virus[z] + 1 
+        } else if((as.numeric(full_cdc_cases$levels[x]) + as.numeric(full_cdc_cases$trends[x])) < as.numeric(3)){ 
+          full_cdc_cases$categories[x] = "L"
+          L_days_virus[z] = L_days_virus[z] + 1
+        }
+        else{ full_cdc_cases$categories[x] = "M"
+        M_days_virus[z] = M_days_virus[z] + 1
+        }
+      }
+      
+      # create data frame
+      count_days_virus <- data.frame(Risk_level_county_name_virus, H_days_virus, M_days_virus, L_days_virus)
+      #write_xlsx(count_days_virus, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_levels_virus_concentration_226_counties.xlsx")
+      
+      # write to file
+      # filenames = paste("~/Documents/GitHub/R_UF/ML/WWScan/Auto_risk/Risk_levels_CDC_cases_county_", buffer_unique$county_names[z], ".xlsx")
+      # write_xlsx(full_cdc_cases, filenames)
+      # write count_days to 1 file
+    }
+  }
+}
+# Plot risk levels data
+set.seed(1234)                                             
+df <- data.frame(HIGH_virus = H_days_virus)#,
+# Medium = M_days,
+# LOW = L_days)
+plot.ts(df, main="Number of days in each risk categories of virus concentration",
+        xlab="226 counties", ylab="", col="darkgreen")
+
+# plot 2 high day risk level
+df_mul <- data.frame(x = 1:226,
+                      Virus_concen = H_days_virus,
+                      Covid_case = H_days)
+
+plot(df_mul$x, df_mul$Virus_concen, type = "o", col = 1, ylim = c(0, 2000)) 
+lines(df_mul$x, df_mul$Covid_case, type = "o", col = 2)
+# grid(nx = 20, ny = 20,
+#      lty = 2,      # Grid line type
+#      col = "gray", # Grid line color
+#      lwd = 2)      # Grid line width
+
+###################################################
+###################################################
 
 ###################################################
 # extract virus concentration data of county 6001
