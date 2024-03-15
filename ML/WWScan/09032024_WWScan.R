@@ -66,8 +66,108 @@ buffer_full = covid_cases_cdc %>% distinct()
 
 ###################################################
 # extract data CDC_covid_case of county 6001
-# covid_county_6001 <- buffer_full[county_names == 6001]
-# write_xlsx(covid_county_6001, "~/Documents/GitHub/R_UF/ML/WWScan/CDC_Covid_cases_county_6001.xlsx")
+# county_no = 6001
+for (z in 1:226) {
+  #z = 127
+  covid_county <- buffer_full[county_names == buffer_unique$county_names[z]] #1
+  quantile_cdc_cases_33 = quantile(covid_county$cases_by_cdc_case_earliest_date, probs = c(0.33))
+  quantile_cdc_cases_66 = quantile(covid_county$cases_by_cdc_case_earliest_date, probs = c(0.66))
+  # write_xlsx(covid_county_6001, "~/Documents/GitHub/R_UF/ML/WWScan/CDC_Covid_cases_county_6001.xlsx")
+  # Arranging name according to the age
+  covid_county.cases_by_cdc_case_earliest_date <- arrange(covid_county, sample_collect_date)
+  covid_county <- covid_county.cases_by_cdc_case_earliest_date
+  covid_county <- covid_county[, -c("county_names")]
+  # length(covid_county$sample_collect_date)
+  full_date <- seq(from = as.Date(covid_county$sample_collect_date[1]), 
+                       to = as.Date(covid_county$sample_collect_date[length(covid_county$sample_collect_date)]), by = 'day') # V
+  # create data frame
+  sample_collect_date <- full_date
+  full_dates <- data.frame(sample_collect_date)
+  
+  # get full dates with cases, NA will be assigned 0
+  full_cdc_cases = merge(x = full_dates, y = covid_county, by = "sample_collect_date", all = TRUE)
+  full_cdc_cases[is.na(full_cdc_cases)] <- 0
+  
+  # Lowess smoothing data
+  # # Plot with raw data
+  # plot(full_cdc_cases$sample_collect_date, full_cdc_cases$cases_by_cdc_case_earliest_date, main="Scatterplot CDC Cases 75th Percentile",
+  #      xlab="226 counties", ylab="75th Percentile Covid Cases by CDC", pch=19, col="darkgreen", cex=0.75)
+  # # Smooth fit
+  # lines(lowess(full_cdc_cases$sample_collect_date, full_cdc_cases$cases_by_cdc_case_earliest_date, f=0.001), col = "yellow", lwd = 3) # f=0.01
+  lowess_CDC_cases = lowess(full_cdc_cases$sample_collect_date, full_cdc_cases$cases_by_cdc_case_earliest_date, f=0.001)
+  
+  # add lowess data back
+  full_cdc_cases <- cbind(full_cdc_cases, lowess_data = lowess_CDC_cases$y)
+  # # Plot with lowess data
+  # plot(full_cdc_cases$sample_collect_date, full_cdc_cases$lowess_data, main="Scatterplot CDC Cases 75th Percentile",
+  #      xlab="226 counties", ylab="75th Percentile Covid Cases by CDC", pch=19, col="darkgreen", cex=0.75)
+  
+  # add Risk assessment columns to data levels, trends, categories
+  # create data frame
+  levels <- 0
+  trends <- 0
+  categories <- 0
+  Risk <- data.frame(levels, trends, categories)
+  full_cdc_cases <- cbind(full_cdc_cases, Risk)
+  # Calculate levels
+  full_range = length(full_cdc_cases$sample_collect_date)
+  if (full_range > 22) {
+    for (x in 22:full_range) {
+      if(full_cdc_cases$lowess_data[x] > quantile_cdc_cases_66){ 
+        full_cdc_cases$levels[x] = 6
+      } else if(full_cdc_cases$lowess_data[x] < quantile_cdc_cases_33){ 
+          full_cdc_cases$levels[x] = 2
+          }
+        else{ full_cdc_cases$levels[x] = 4
+        }
+    }
+    
+    # Calculate trends
+    for (x in 22:full_range) {
+      if(full_cdc_cases$lowess_data[x] > full_cdc_cases$lowess_data[x-21] * 1.2) { 
+        full_cdc_cases$trends[x] = 1
+      } else if(full_cdc_cases$lowess_data[x] < full_cdc_cases$lowess_data[x-21] * 0.8){ 
+        full_cdc_cases$trends[x] = -1
+      }
+      else{ full_cdc_cases$trends[x] = 0
+      }
+    }
+    
+    # Calculate categories
+    H_days = 0
+    M_days = 0
+    L_days = 0
+    for (x in 22:full_range) {
+      if((as.numeric(full_cdc_cases$levels[x]) + as.numeric(full_cdc_cases$trends[x])) > as.numeric(4)) { 
+        full_cdc_cases$categories[x] = "H"
+        H_days = H_days + 1 
+      } else if((as.numeric(full_cdc_cases$levels[x]) + as.numeric(full_cdc_cases$trends[x])) < as.numeric(3)){ 
+        full_cdc_cases$categories[x] = "L"
+        L_days = L_days + 1
+      }
+      else{ full_cdc_cases$categories[x] = "M"
+            M_days = M_days + 1
+    }
+  }
+  
+  # create data frame
+  count_days <- data.frame(H_days, M_days, L_days)
+  full_cdc_cases <- cbind(full_cdc_cases, count_days)
+  
+  # write to file
+  # filenames = paste("~/Documents/GitHub/R_UF/ML/WWScan/Auto_risk/Risk_levels_CDC_cases_county_", buffer_unique$county_names[z], ".xlsx")
+  # write_xlsx(full_cdc_cases, filenames)
+  # write count_days to 1 file
+  H_days = 0
+  M_days = 0
+  L_days = 0
+  buffer_unique$county_names[1]
+  filenames = paste("~/Documents/GitHub/R_UF/ML/WWScan/Auto_risk/Risk_levels_CDC_cases_county_", buffer_unique$county_names[z], ".xlsx")
+  write_xlsx(full_cdc_cases, filenames)
+  
+  }
+}
+###################################################
 ###################################################
 
 for (x in 1:226) {
