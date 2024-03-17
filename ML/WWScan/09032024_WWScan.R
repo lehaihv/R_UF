@@ -362,6 +362,7 @@ plot(df_mul$No_of_days_High_Virus_concen, df_mul$No_of_days_High_Covid_case,
 # Linear fit
 abline(lm(df_mul$No_of_days_High_Virus_concen ~ df_mul$No_of_days_High_Covid_case), col = "orange", lwd = 3)
 model1 <- summary(lm(df_mul$No_of_days_High_Virus_concen ~ df_mul$No_of_days_High_Covid_case, data = df_mul))
+model1
 
 # Plot Medium category
 plot(df_mul$No_of_days_Medium_Virus_concen, df_mul$No_of_days_Medium_Covid_case, 
@@ -371,6 +372,7 @@ plot(df_mul$No_of_days_Medium_Virus_concen, df_mul$No_of_days_Medium_Covid_case,
 # Linear fit
 abline(lm(df_mul$No_of_days_Medium_Virus_concen ~ df_mul$No_of_days_Medium_Covid_case), col = "orange", lwd = 3)
 model2 <- summary(lm(df_mul$No_of_days_Medium_Virus_concen ~ df_mul$No_of_days_Medium_Covid_case, data = df_mul))
+model2
 
 # Plot Low category
 plot(df_mul$No_of_days_Low_Virus_concen, df_mul$No_of_days_Low_Covid_case, 
@@ -380,6 +382,7 @@ plot(df_mul$No_of_days_Low_Virus_concen, df_mul$No_of_days_Low_Covid_case,
 # Linear fit
 abline(lm(df_mul$No_of_days_Low_Virus_concen ~ df_mul$No_of_days_Low_Covid_case), col = "orange", lwd = 3)
 model3 <- summary(lm(df_mul$No_of_days_Low_Virus_concen ~ df_mul$No_of_days_Low_Covid_case, data = df_mul))
+model3
 
 # Plot High + Medium category
 H_M_virus = df_mul$No_of_days_High_Virus_concen + df_mul$No_of_days_Medium_Virus_concen
@@ -389,8 +392,10 @@ plot(H_M_virus, H_M_cases,
      xlab="Virus concentration", ylab="CDC covid cases", 
      pch=19, col="darkgreen", cex=0.75)
 # Linear fit
-abline(lm(H_M_virus ~ H_M_cases), col = "orange", lwd = 3)
+abline(lm(H_M_virus ~ H_M_cases, data = df_mul), col = "orange", lwd = 3)
 model4 <- summary(lm(H_M_virus ~ H_M_cases, data = df_mul))
+plot(model4$residuals, pch = 16, col = "red")
+model4
 
 ###############################################
 ###############################################
