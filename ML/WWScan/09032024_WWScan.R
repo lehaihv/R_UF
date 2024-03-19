@@ -43,10 +43,12 @@ covid_cases <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/worki
 
 covid_cases_cdc <- inner_join(covid_key_sewershed %>% distinct(), covid_cases, by = "key_sewershed") #"county_names")
 covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed")]
-# write_xlsx(covid_cases_cdc, "~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_per100k.xlsx")
+# write_xlsx(covid_cases_cdc, "~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_per100k1.xlsx")
 
-# covid_cases_cdc <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_per100k.xlsx", sheet = 1))
-# covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed", "population_served")]
+covid_cases_cdc_100k <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_per100k.xlsx", sheet = 1))
+covid_cases_cdc <- covid_cases_cdc_100k[, -c("population_served")]
+# need remove duplicate sample_collect_date
+
 
 # covid_cases_cdc %>% distinct()
 # covid_final <- inner_join(covid2, covid3, by = "key_sewershed")
@@ -347,7 +349,7 @@ df_mul <- data.frame(counties_name = buffer_unique$county_names,
                      No_of_days_Medium_Covid_case = M_case,
                      No_of_days_Low_Covid_case = L_case)
 
-# write_xlsx(df_mul, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_categories_overlap_time_226_counties.xlsx")
+# write_xlsx(df_mul, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_categories_overlap_time_226_counties_100k.xlsx")
 # df_mul[is.na(df_mul)] <- 0
 # df_mul <- filter(df_mul, No_of_days_High_Virus_concen != NULL)
 # omit all NA counties
