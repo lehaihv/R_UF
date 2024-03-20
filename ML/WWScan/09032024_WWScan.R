@@ -36,36 +36,57 @@ options(max.print=999999)
 set.seed(1234)
 
 ##################################################
+##################################################
+# # load data covid cases
+# covid_key_sewershed <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 1))
+# # covid_key_sewershed <- covid_key_sewershed[, -c("population_served")]
+# covid_cases <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 3))
+# 
+# #covid_key_sewershed = covid_key_sewershed %>% distinct(county_names, .keep_all = TRUE)
+# 
+# 
+# covid_cases_cdc <- inner_join(covid_key_sewershed %>% distinct(), covid_cases, by = "key_sewershed") #"county_names")
+# # covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed")]
+# write_xlsx(covid_cases_cdc, "~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_03202024.xlsx")
+# 
+# # Cases per 100k
+# covid_cases_cdc_100k <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_per100k.xlsx", sheet = 1))
+# #covid_cases_cdc <- covid_cases_cdc_100k[, -c("population_served")]
+# # need remove duplicate sample_collect_date
+# 
+# full_cdc_cases <- cbind(covid_cases_cdc, covid_cases_cdc_100k$cases_by_cdc_case_earliest_date)
+
+
+##################################################
+##################################################
 # load data covid cases
-covid_key_sewershed <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 1))
-covid_key_sewershed <- covid_key_sewershed[, -c("population_served")]
-covid_cases <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 3))
-
-covid_cases_cdc <- inner_join(covid_key_sewershed %>% distinct(), covid_cases, by = "key_sewershed") #"county_names")
-covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed")]
-# write_xlsx(covid_cases_cdc, "~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_per100k1.xlsx")
-
-covid_cases_cdc_100k <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_per100k.xlsx", sheet = 1))
-covid_cases_cdc <- covid_cases_cdc_100k[, -c("population_served")]
-# need remove duplicate sample_collect_date
+# covid_key_sewershed <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 1))
+# covid_key_sewershed <- covid_key_sewershed[, -c("population_served")]
+# covid_cases <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 3))
+# 
+# covid_cases_cdc <- inner_join(covid_key_sewershed %>% distinct(), covid_cases, by = "key_sewershed") #"county_names")
 
 
-# covid_cases_cdc %>% distinct()
-# covid_final <- inner_join(covid2, covid3, by = "key_sewershed")
-# write_xlsx(covid3 %>% distinct(), "~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases.xlsx")
-# buffer_unique= covid3 %>% distinct(county_names, .keep_all = TRUE)
-# buffer_unique$county_names[1]
-# buffer_full = covid3 %>% distinct()
-# covid_county <- buffer_full[county_names == buffer_unique$county_names[1]]
-# covid %>% distinct()
-# df_to_join <- unique(covid1)
-# buffer_unique$county_names[x]
+##################################################
+##################################################
+# loading data cdc covid cases
+# 1. Absolute cases
+covid_cases_cdc <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_03202024.xlsx", sheet = 1))
+covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed", "population_served")]
 
+# 2. Cases per 100k
+covid_cases_cdc <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_03202024_100k.xlsx", sheet = 1))
+covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed", "population_served")]
+
+##################################################
+##################################################
 quantile_cdc_cases_66 = 0
 quantile_cdc_cases_33 = 0
 buffer_unique= covid_cases_cdc %>% distinct(county_names, .keep_all = TRUE)
 buffer_full = covid_cases_cdc %>% distinct()
 
+##################################################
+##################################################
 # loading data virus concentration for only 226 counties (same counites with CDC_cases)
 covid_concen <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 2))
 buffer_concen_unique= covid_concen %>% distinct(county_names, .keep_all = TRUE)
@@ -354,7 +375,7 @@ df_mul <- data.frame(counties_name = buffer_unique$county_names,
 # df_mul <- filter(df_mul, No_of_days_High_Virus_concen != NULL)
 # omit all NA counties
 # df_mul <- na.omit(df_mul)
-
+cor()
 
 # Plot High category
 plot(df_mul$No_of_days_High_Virus_concen, df_mul$No_of_days_High_Covid_case, 
