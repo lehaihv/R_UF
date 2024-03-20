@@ -370,12 +370,9 @@ df_mul <- data.frame(counties_name = buffer_unique$county_names,
                      No_of_days_Medium_Covid_case = M_case,
                      No_of_days_Low_Covid_case = L_case)
 
+# write data to excel file
 # write_xlsx(df_mul, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_categories_overlap_time_226_counties_100k.xlsx")
-# df_mul[is.na(df_mul)] <- 0
-# df_mul <- filter(df_mul, No_of_days_High_Virus_concen != NULL)
-# omit all NA counties
-# df_mul <- na.omit(df_mul)
-cor()
+
 
 # Plot High category
 plot(df_mul$No_of_days_High_Virus_concen, df_mul$No_of_days_High_Covid_case, 
