@@ -62,14 +62,19 @@ for (i in 1:812) { #812
 ##################################################
 lowess_county_data <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/JH_CC/JH_CC_County_lowess_ww.xlsx"))
 jh_cc <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/JH_CC/JH_CC_County_ww.xlsx"))
+sample_collect_date <- jh_cc$dates[1:1142]
 county_names <- 0
+lowess_col <- 0
+lowess_col <- data.frame(a=unlist(lowess_county_data[,2:813], use.names = FALSE))
 
-for (i in 1:1) {
-  sample_collect_date <- jh_cc$dates[1:1142]
-  county_names[1:1142] <- jh_cc$county_names[1]
-  county_record <- data.frame(county_names[1:1142], sample_collect_date, lowess_county_data$V2...2)
-  write_xlsx(county_record, "~/Documents/GitHub/R_UF/ML/JH_CC/JH_CC_County_lowess_final_ww.xlsx")
+
+for (i in 2:813) {
+  county_names[((i-2)*1142 + 1):((i-1)*1142)] <- jh_cc$county_names[i-1]
 }
+
+# cases_by_cdc_case_earliest_date = lowess_col
+lowess_col_full <- data.table(county_names, sample_collect_date, )
+write_xlsx(lowess_col_full, "~/Documents/GitHub/R_UF/ML/JH_CC/JH_CC_lowess_812_counties.xlsx")
 
 
 

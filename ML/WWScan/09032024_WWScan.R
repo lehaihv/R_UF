@@ -70,14 +70,17 @@ set.seed(1234)
 ##################################################
 ##################################################
 # loading data cdc covid cases
-# 1. Absolute cases
+# 1. Absolute cases 226 counties
 covid_cases_cdc <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_03202024.xlsx", sheet = 1))
 covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed", "population_served")]
 
-# 2. Cases per 100k
+# 2. Cases per 100k 226 counties
 covid_cases_cdc <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_03202024_100k.xlsx", sheet = 1))
 covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed", "population_served")]
 
+# 3. Absolute cases 812 counties
+covid_cases_cdc <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/covid_cdc_cases_03202024.xlsx", sheet = 1))
+covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed", "population_served")]
 ##################################################
 ##################################################
 quantile_cdc_cases_66 = 0
