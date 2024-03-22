@@ -94,7 +94,7 @@ buffer_concen_full = covid_concen %>% distinct()
 # quantile_wastewater_concen_33 = 0
 # quantile_wastewater_concen_66 = 0
 concen_range = 226 #815 226
-
+# write_xlsx(buffer_concen_unique, "~/Documents/GitHub/R_UF/ML/JH_CC/County_ww.xlsx")
 ###################################################
 # extract data CDC_covid_case of county 6001
 # county_no = 6001
