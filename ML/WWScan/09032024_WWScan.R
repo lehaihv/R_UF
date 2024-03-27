@@ -24,7 +24,7 @@ library(ggplot2)
 
 library(readxl)
 library(writexl)
-
+library(zoo)
 # options(max.print=999999)
 
 # MacOS path
@@ -125,8 +125,8 @@ window_size = 28
 slope_high = 1.1
 slope_low = 0.8
 
-for (z in 1:226) {
-  z = 1
+for (z in 1:226) { # 226
+  #z = 31
   covid_county <- buffer_full[county_names == buffer_unique$county_names[z]] #1
   quantile_cdc_cases_33 = quantile(covid_county$cases_by_cdc_case_earliest_date, probs = c(low_percentile_range))
   quantile_cdc_cases_66 = quantile(covid_county$cases_by_cdc_case_earliest_date, probs = c(high_percentile_range))
@@ -144,7 +144,7 @@ for (z in 1:226) {
   
   # get full dates with cases, NA will be assigned 0
   full_cdc_cases = merge(x = full_dates, y = covid_county, by = "sample_collect_date", all = TRUE)
-  full_cdc_cases[is.na(full_cdc_cases)] <- 0
+  # full_cdc_cases[is.na(full_cdc_cases)] <- 0
   
   # Lowess smoothing data
   # # Plot with raw data
@@ -152,10 +152,20 @@ for (z in 1:226) {
   #      xlab="226 counties", ylab="75th Percentile Covid Cases by CDC", pch=19, col="darkgreen", cex=0.75)
   # # Smooth fit
   # lines(lowess(full_cdc_cases$sample_collect_date, full_cdc_cases$cases_by_cdc_case_earliest_date, f=0.001), col = "yellow", lwd = 3) # f=0.01
-  lowess_CDC_cases = lowess(full_cdc_cases$sample_collect_date, full_cdc_cases$cases_by_cdc_case_earliest_date, f=0.001)
-  
+  # lowess_CDC_cases = lowess(full_cdc_cases$sample_collect_date, full_cdc_cases$cases_by_cdc_case_earliest_date, f=0.001)
+  ################################################################
+  temp_data <- data.frame(
+    day = seq(1, length(full_cdc_cases$sample_collect_date)),
+    daily_cases = full_cdc_cases$cases_by_cdc_case_earliest_date
+    )
+  temp_data$day <- as.numeric(temp_data$day)
+  temp_data$daily_cases <- na.aggregate(temp_data$daily_cases)
+  temp_lowess_CDC_cases = loess(daily_cases ~ day, data = temp_data)
+  temp_data$daily_cases <- predict(temp_lowess_CDC_cases, newdata = NULL)
+  #full_cdc_cases$cases_by_cdc_case_earliest_date <- temp_data$daily_cases
+  ################################################################
   # add lowess data back
-  full_cdc_cases <- cbind(full_cdc_cases, lowess_data = lowess_CDC_cases$y)
+  full_cdc_cases <- cbind(full_cdc_cases, lowess_data = temp_data$daily_cases)
   # # Plot with lowess data
   # plot(full_cdc_cases$sample_collect_date, full_cdc_cases$lowess_data, main="Scatterplot CDC Cases 75th Percentile",
   #      xlab="226 counties", ylab="75th Percentile Covid Cases by CDC", pch=19, col="darkgreen", cex=0.75)
@@ -257,7 +267,7 @@ for (z in 1:226) {
     
     # get full dates with cases, NA will be assigned 0
     full_ww_virus = merge(x = full_dates, y = virus_county, by = "sample_collect_date", all = TRUE)
-    full_ww_virus[is.na(full_ww_virus)] <- 0
+    #full_ww_virus[is.na(full_ww_virus)] <- 0
     
     # Lowess smoothing data
     # # Plot with raw data
@@ -265,10 +275,22 @@ for (z in 1:226) {
     #      xlab="226 counties", ylab="75th Percentile Covid Cases by CDC", pch=19, col="darkgreen", cex=0.75)
     # # Smooth fit
     # lines(lowess(full_cdc_cases$sample_collect_date, full_cdc_cases$cases_by_cdc_case_earliest_date, f=0.001), col = "yellow", lwd = 3) # f=0.01
-    lowess_ww_virus = lowess(full_ww_virus$sample_collect_date, full_ww_virus$pcr_target_flowpop_lin, f=0.001)
+    #lowess_ww_virus = lowess(full_ww_virus$sample_collect_date, full_ww_virus$pcr_target_flowpop_lin, f=0.001)
+    
+    ################################################################
+    temp_data_virus <- data.frame(
+      days = seq(1, length(full_ww_virus$sample_collect_date)),
+      virus_concen = full_ww_virus$pcr_target_flowpop_lin
+    )
+    temp_data_virus$days <- as.numeric(temp_data_virus$days)
+    temp_data_virus$virus_concen <- na.aggregate(temp_data_virus$virus_concen)
+    temp_lowess_ww_virus = loess(virus_concen ~ days, data = temp_data_virus)
+    temp_data_virus$virus_concen <- predict(temp_lowess_ww_virus, newdata = NULL)
+    #full_ww_virus$pcr_target_flowpop_lin <- temp_data$virus_concen
+    ################################################################
     
     # add lowess data back
-    full_ww_virus <- cbind(full_ww_virus, lowess_data_virus = lowess_ww_virus$y)
+    full_ww_virus <- cbind(full_ww_virus, lowess_data_virus = temp_data_virus$virus_concen)
     # Plot with lowess data
     # plot(full_cdc_cases$sample_collect_date, full_cdc_cases$lowess_data, main="Scatterplot CDC Cases 75th Percentile",
     #      xlab="226 counties", ylab="75th Percentile Covid Cases by CDC", pch=19, col="darkgreen", cex=0.75)
@@ -340,6 +362,11 @@ for (z in 1:226) {
       # join_data <- 0
       join_data = merge(x = full_cdc_cases, y = full_ww_virus, by = "sample_collect_date")
       join_data <- filter(join_data, categories != 0, categories_virus != 0)
+      ###
+      # write_xlsx(full_cdc_cases, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_levels_cases_8069.xlsx")
+      # write_xlsx(full_ww_virus, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_levels_virus_concentration_8069.xlsx")
+      # write_xlsx(join_data, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_levels_join_CC_WW_8069.xlsx")
+      ###
       # length(join_data$sample_collect_date)
       H_case[z] = 0
       M_case[z] = 0
@@ -381,16 +408,16 @@ df_mul <- data.frame(counties_name = buffer_unique$county_names,
                      No_of_days_Low_Covid_case = L_case)
 
 # write data to excel file
-# write_xlsx(df_mul, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_categories_overlap_time_226_counties_100k_28day_slope11.xlsx")
+# write_xlsx(df_mul, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_categories_overlap_time_226_counties_100k_LOESS.xlsx")
 
 
 # Plot High category
-# plot(df_mul$No_of_days_High_Virus_concen, df_mul$No_of_days_High_Covid_case, 
-#      main="Number of days in High Risk",
-#      xlab="Virus concentration", ylab="CDC covid cases", 
-#      pch=19, col="darkgreen", cex=0.75)
-# # Linear fit
-# abline(lm(df_mul$No_of_days_High_Virus_concen ~ df_mul$No_of_days_High_Covid_case), col = "orange", lwd = 3)
+plot(df_mul$No_of_days_High_Virus_concen, df_mul$No_of_days_High_Covid_case,
+     main="Number of days in High Risk",
+     xlab="Virus concentration", ylab="CDC covid cases",
+     pch=19, col="darkgreen", cex=0.75)
+# Linear fit
+abline(lm(df_mul$No_of_days_High_Virus_concen ~ df_mul$No_of_days_High_Covid_case), col = "orange", lwd = 3)
 model1 <- summary(lm(df_mul$No_of_days_High_Virus_concen ~ df_mul$No_of_days_High_Covid_case, data = df_mul))
 model1
 
