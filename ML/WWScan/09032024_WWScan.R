@@ -126,7 +126,7 @@ slope_high = 1.1
 slope_low = 0.8
 
 for (z in 1:226) {
-  #z = 26
+  # z = 1
   covid_county <- buffer_full[county_names == buffer_unique$county_names[z]] #1
   quantile_cdc_cases_33 = quantile(covid_county$cases_by_cdc_case_earliest_date, probs = c(low_percentile_range))
   quantile_cdc_cases_66 = quantile(covid_county$cases_by_cdc_case_earliest_date, probs = c(high_percentile_range))
