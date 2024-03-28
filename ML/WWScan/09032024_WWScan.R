@@ -104,7 +104,7 @@ buffer_concen_full = covid_concen %>% distinct()
 virus_counties <- buffer_concen_unique[, -c("pcr_target_flowpop_lin", "sample_collect_date")]
 cases_counties <- buffer_unique[, -c("cases_by_cdc_case_earliest_date", "sample_collect_date")]
 same_county <- merge(virus_counties, cases_counties, by = "county_names")
-length(same_county$county_names)
+#length(same_county$county_names)
 ##################################################
 ###################################################
 # extract data CDC_covid_case of county 6001
@@ -126,11 +126,11 @@ H_virus <- 0
 M_virus <- 0
 L_virus <- 0
 
-high_percentile_range = 0.66
+high_percentile_range = 0.5
 low_percentile_range = 0.33
-window_size = 21
-slope_high = 1.2
-slope_low = 0.5
+window_size = 28
+slope_high = 1.1
+slope_low = 0.8
 
 for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_names)
   #z = 45
@@ -420,7 +420,7 @@ df_mul <- data.frame(counties_name = same_county$county_names,
                      No_of_days_Low_Covid_case = L_case)
 
 # write data to excel file
-# write_xlsx(df_mul, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_categories_overlap_time_226_counties_100k_LOESS.xlsx")
+#write_xlsx(df_mul, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_categories_overlap_time_44_counties_only_n1_100k_LOESS.xlsx")
 
 
 # Plot High category
