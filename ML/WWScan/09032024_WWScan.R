@@ -119,11 +119,11 @@ H_virus <- 0
 M_virus <- 0
 L_virus <- 0
 
-high_percentile_range = 0.5
+high_percentile_range = 0.66
 low_percentile_range = 0.33
-window_size = 28
-slope_high = 1.1
-slope_low = 0.8
+window_size = 21
+slope_high = 1.2
+slope_low = 0.5
 
 for (z in 1:226) { # 226
   #z = 31
