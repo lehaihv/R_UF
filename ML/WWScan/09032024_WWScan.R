@@ -92,13 +92,20 @@ buffer_full = covid_cases_cdc %>% distinct()
 ##################################################
 ##################################################
 # loading data virus concentration for only 226 counties (same counites with CDC_cases)
-covid_concen <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data.xlsx", sheet = 2))
+covid_concen <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/WWScan/working_data_onlyN1.xlsx", sheet = 2))
 buffer_concen_unique= covid_concen %>% distinct(county_names, .keep_all = TRUE)
 buffer_concen_full = covid_concen %>% distinct()
 # quantile_wastewater_concen_33 = 0
 # quantile_wastewater_concen_66 = 0
-concen_range = 226 #815 226
+# concen_range = 226 #815 226
 # write_xlsx(buffer_concen_unique, "~/Documents/GitHub/R_UF/ML/JH_CC/County_ww.xlsx")
+##################################################
+# Get the same county list of WW and CC
+virus_counties <- buffer_concen_unique[, -c("pcr_target_flowpop_lin", "sample_collect_date")]
+cases_counties <- buffer_unique[, -c("cases_by_cdc_case_earliest_date", "sample_collect_date")]
+same_county <- merge(virus_counties, cases_counties, by = "county_names")
+length(same_county$county_names)
+##################################################
 ###################################################
 # extract data CDC_covid_case of county 6001
 # county_no = 6001
@@ -125,17 +132,17 @@ window_size = 21
 slope_high = 1.2
 slope_low = 0.5
 
-for (z in 1:226) { # 226
-  #z = 31
-  covid_county <- buffer_full[county_names == buffer_unique$county_names[z]] #1
-  quantile_cdc_cases_33 = quantile(covid_county$cases_by_cdc_case_earliest_date, probs = c(low_percentile_range))
-  quantile_cdc_cases_66 = quantile(covid_county$cases_by_cdc_case_earliest_date, probs = c(high_percentile_range))
+for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_names)
+  #z = 45
+  covid_county <- buffer_full[county_names == same_county$county_names[z]] # buffer_unique
+  # quantile_cdc_cases_33 = quantile(covid_county$cases_by_cdc_case_earliest_date, probs = c(low_percentile_range))
+  # quantile_cdc_cases_66 = quantile(covid_county$cases_by_cdc_case_earliest_date, probs = c(high_percentile_range))
   # write_xlsx(covid_county_6001, "~/Documents/GitHub/R_UF/ML/WWScan/CDC_Covid_cases_county_6001.xlsx")
   # Arranging name according to the age
   covid_county.cases_by_cdc_case_earliest_date <- arrange(covid_county, sample_collect_date)
   covid_county <- covid_county.cases_by_cdc_case_earliest_date
   covid_county <- covid_county[, -c("county_names")]
-  length(covid_county$sample_collect_date)
+  # length(covid_county$sample_collect_date)
   full_date <- seq(from = as.Date(covid_county$sample_collect_date[1]), 
                    to = as.Date(covid_county$sample_collect_date[length(covid_county$sample_collect_date)]), by = 'day') # V
   # create data frame
@@ -166,6 +173,8 @@ for (z in 1:226) { # 226
   ################################################################
   # add lowess data back
   full_cdc_cases <- cbind(full_cdc_cases, lowess_data = temp_data$daily_cases)
+  quantile_cdc_cases_33 = quantile(full_cdc_cases$lowess_data, probs = c(low_percentile_range))
+  quantile_cdc_cases_66 = quantile(full_cdc_cases$lowess_data, probs = c(high_percentile_range))
   # # Plot with lowess data
   # plot(full_cdc_cases$sample_collect_date, full_cdc_cases$lowess_data, main="Scatterplot CDC Cases 75th Percentile",
   #      xlab="226 counties", ylab="75th Percentile Covid Cases by CDC", pch=19, col="darkgreen", cex=0.75)
@@ -208,7 +217,7 @@ for (z in 1:226) { # 226
     Risk_level_county_name[z] = 0
     #z=1
     for (x in (window_size + 1):full_range) {
-      Risk_level_county_name[z] = buffer_unique$county_names[z]
+      Risk_level_county_name[z] = same_county$county_names[z]
       if((as.numeric(full_cdc_cases$levels[x]) + as.numeric(full_cdc_cases$trends[x])) > as.numeric(4)) { 
         full_cdc_cases$categories[x] = "H"
         H_days[z] = H_days[z] + 1 
@@ -249,10 +258,11 @@ for (z in 1:226) { # 226
   # Risk_level_county_name_virus = 0
   #for (z in 1:1) {
   #z = 10
-  virus_county <- buffer_concen_full[county_names == buffer_unique$county_names[z]] #1
+  virus_county <- buffer_concen_full[county_names == same_county$county_names[z]] # buffer_unique
+  # length(virus_county$pcr_target_flowpop_lin)
   if (length(virus_county$sample_collect_date) > (window_size + 1)) {
-    quantile_cdc_cases_33 = quantile(virus_county$pcr_target_flowpop_lin, probs = c(low_percentile_range))
-    quantile_cdc_cases_66 = quantile(virus_county$pcr_target_flowpop_lin, probs = c(high_percentile_range))
+    # quantile_cdc_cases_33 = quantile(virus_county$pcr_target_flowpop_lin, probs = c(low_percentile_range))
+    # quantile_cdc_cases_66 = quantile(virus_county$pcr_target_flowpop_lin, probs = c(high_percentile_range))
     # write_xlsx(covid_county_6001, "~/Documents/GitHub/R_UF/ML/WWScan/CDC_Covid_cases_county_6001.xlsx")
     # Arranging name according to the age
     virus_county.pcr_target_flowpop_lin <- arrange(virus_county, sample_collect_date)
@@ -291,6 +301,8 @@ for (z in 1:226) { # 226
     
     # add lowess data back
     full_ww_virus <- cbind(full_ww_virus, lowess_data_virus = temp_data_virus$virus_concen)
+    quantile_cdc_cases_33 = quantile(full_ww_virus$lowess_data_virus, probs = c(low_percentile_range))
+    quantile_cdc_cases_66 = quantile(full_ww_virus$lowess_data_virus, probs = c(high_percentile_range))
     # Plot with lowess data
     # plot(full_cdc_cases$sample_collect_date, full_cdc_cases$lowess_data, main="Scatterplot CDC Cases 75th Percentile",
     #      xlab="226 counties", ylab="75th Percentile Covid Cases by CDC", pch=19, col="darkgreen", cex=0.75)
@@ -333,7 +345,7 @@ for (z in 1:226) { # 226
       Risk_level_county_name_virus[z] = 0
       #z=1
       for (x in (window_size + 1):full_range) {
-        Risk_level_county_name_virus[z] = buffer_unique$county_names[z]
+        Risk_level_county_name_virus[z] = same_county$county_names[z]
         if((as.numeric(full_ww_virus$levels_virus[x]) + as.numeric(full_ww_virus$trends_virus[x])) > as.numeric(4)) { 
           full_ww_virus$categories_virus[x] = "H"
           H_days_virus[z] = H_days_virus[z] + 1 
@@ -399,7 +411,7 @@ for (z in 1:226) { # 226
 }
 
 # Plot data
-df_mul <- data.frame(counties_name = buffer_unique$county_names,
+df_mul <- data.frame(counties_name = same_county$county_names,
                      No_of_days_High_Virus_concen = H_virus,
                      No_of_days_Medium_Virus_concen = M_virus,
                      No_of_days_Low_Virus_concen = L_virus,
