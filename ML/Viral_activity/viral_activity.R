@@ -75,7 +75,8 @@ set.seed(1234)
 # covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed", "population_served")]
 
 # 2. Cases per 100k 226 counties
-covid_cases_cdc <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/Viral_activity/covid_cdc_cases_03202024_100k.xlsx", sheet = 1))
+# covid_cases_cdc <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/Viral_activity/covid_cdc_cases_03202024_100k.xlsx", sheet = 1))
+covid_cases_cdc <- as.data.table(read_excel("/home/lehai/GitHub/R_UF/ML/Viral_activity/covid_cdc_cases_03202024_100k.xlsx", sheet = 1))
 covid_cases_cdc <- covid_cases_cdc[, -c("key_sewershed", "population_served")]
 
 # # 3. Absolute cases 812 counties
@@ -92,7 +93,8 @@ buffer_full = covid_cases_cdc %>% distinct()
 ##################################################
 ##################################################
 # loading data virus concentration for only 226 counties (same counites with CDC_cases)
-covid_concen <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/Viral_activity/working_data.xlsx", sheet = 2)) #_onlyN1
+# covid_concen <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/Viral_activity/working_data.xlsx", sheet = 2)) #_onlyN1
+covid_concen <- as.data.table(read_excel("/home/lehai/GitHub/R_UF/ML/Viral_activity/working_data.xlsx", sheet = 2)) #_onlyN1
 buffer_concen_unique= covid_concen %>% distinct(county_names, .keep_all = TRUE)
 buffer_concen_full = covid_concen %>% distinct()
 # quantile_wastewater_concen_33 = 0
@@ -134,7 +136,7 @@ same_county <- merge(virus_counties, cases_counties, by = "county_names")
 Mi_case = L_case = Mo_case = H_case = VH_case = 0
 Mi_virus = L_virus = Mo_virus = H_virus = VH_virus = 0
 for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_names)
-  z = 3
+  # z = 3
   covid_county <- buffer_full[county_names == same_county$county_names[z]] 
   # Arranging cases according to the dates
   covid_county.cases_by_cdc_case_earliest_date <- arrange(covid_county, sample_collect_date)
@@ -246,25 +248,25 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
   # # Join WW and CC to get the overlap
   # join_data <- 0
   join_data = merge(x = full_cdc_cases, y = full_ww_virus, by = "sample_collect_date")
-  plot(join_data$sample_collect_date,
-       join_data$viral_activity_cases,
-       type = "l",
-       col = 2,
-       ylim = c(0, 70),
-       main="County 6019",
-       xlab = "Date",
-       ylab = "Viral Activity")
-
-  # Add line graphs of other two dataset
-  lines(join_data$sample_collect_date,
-        join_data$viral_activity_virus,
-        type = "l",
-        col = 3)
-  # Add legend in top right corner
-  legend("topright",
-         c("CDC cases", "WW water"),
-         lty = 1,
-         col = 2:4)
+  # plot(join_data$sample_collect_date,
+  #      join_data$viral_activity_cases,
+  #      type = "l",
+  #      col = 2,
+  #      ylim = c(0, 70),
+  #      main="County 6019",
+  #      xlab = "Date",
+  #      ylab = "Viral Activity")
+  # 
+  # # Add line graphs of other two dataset
+  # lines(join_data$sample_collect_date,
+  #       join_data$viral_activity_virus,
+  #       type = "l",
+  #       col = 3)
+  # # Add legend in top right corner
+  # legend("topright",
+  #        c("CDC cases", "WW water"),
+  #        lty = 1,
+  #        col = 2:4)
   
   # join_data <- filter(join_data, categories != 0, categories_virus != 0)
   ###
