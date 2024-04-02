@@ -101,8 +101,9 @@ same_county <- merge(virus_counties, cases_counties, by = "county_names")
 # slope_low = 0.8
 Mi_case = L_case = Mo_case = H_case = VH_case = 0
 Mi_virus = L_virus = Mo_virus = H_virus = VH_virus = 0
+span_const = 0.1
 for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_names)
-  # z = 1
+  z = 3 
   covid_county <- buffer_full[county_names == same_county$county_names[z]] 
   # Arranging cases according to the dates
   covid_county.cases_by_cdc_case_earliest_date <- arrange(covid_county, sample_collect_date)
@@ -116,17 +117,38 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
   # get full dates with cases, NA will be assigned 0
   full_cdc_cases = merge(x = full_dates, y = covid_county, by = "sample_collect_date", all = TRUE)
   ################################################################
-  temp_data <- data.frame(
-    day = seq(1, length(full_cdc_cases$sample_collect_date)),
-    daily_cases = full_cdc_cases$cases_by_cdc_case_earliest_date
-  )
-  temp_data$day <- as.numeric(temp_data$day)
-  temp_data$daily_cases <- na.aggregate(temp_data$daily_cases)
-  temp_lowess_CDC_cases = loess(daily_cases ~ day, data = temp_data)
-  temp_data$daily_cases <- predict(temp_lowess_CDC_cases, newdata = NULL)
-  # add lowess data back
-  full_cdc_cases$lowess_data <- temp_data$daily_cases
+  # temp_data <- data.frame(
+  #   day = seq(1, length(full_cdc_cases$sample_collect_date)),
+  #   daily_cases = full_cdc_cases$cases_by_cdc_case_earliest_date
+  # )
+  # temp_data$day <- as.numeric(temp_data$day)
+  # temp_data$daily_cases <- na.aggregate(temp_data$daily_cases)
+  # temp_lowess_CDC_cases = loess(daily_cases ~ day, data = temp_data)
+  # temp_data$daily_cases <- predict(temp_lowess_CDC_cases, newdata = NULL)
+  # # add lowess data back
+  # full_cdc_cases$lowess_data <- temp_data$daily_cases
   ################################################################
+  ################################################################
+  # Create example data
+  x <- 1:length(full_cdc_cases$sample_collect_date)
+  y <- full_cdc_cases$cases_by_cdc_case_earliest_date
+  x.all <- seq(1, length(full_cdc_cases$sample_collect_date), 1)
+  # Fit LOESS model
+  loess_model <- loess(y ~ x, na.action = na.exclude, span = span_const)
+  
+  # Predict missing values
+  predicted_values <- predict(loess_model, newdata=x.all)
+  
+  # Replace missing values with predicted values
+  #y[is.na(y)] <- predicted_values[is.na(y)]
+  
+  full_cdc_cases$lowess_data <- predicted_values #y
+  
+  # View the updated data
+  #print(y)
+  
+  ################################################################
+  
   # add Ln_e()
   full_cdc_cases$lowess_data_lne <- log(full_cdc_cases$lowess_data)
   # get 1 year period to calculate 10th percentile
@@ -137,7 +159,7 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
   if (length(temp) < 1) {temp[1] = length(full_cdc_cases$sample_collect_date)}
   full_cdc_cases$lowess_data_lne_quantile_10th <- quantile(full_cdc_cases$lowess_data_lne[1:temp[1]], probs = c(0.1), na.rm = TRUE) 
   # calculate standard deviation
-  full_cdc_cases$lowess_data_lne_stdev <- sd(full_cdc_cases$lowess_data_lne[1:temp[1]])
+  full_cdc_cases$lowess_data_lne_stdev <- sd(full_cdc_cases$lowess_data_lne[1:temp[1]], na.rm=TRUE)
   # calculate activity level with cases
   for (t in 1:length(full_cdc_cases$sample_collect_date)) {
     full_cdc_cases$viral_activity_cases[t] <- exp((full_cdc_cases$lowess_data_lne[t] - full_cdc_cases$lowess_data_lne_quantile_10th[t])/full_cdc_cases$lowess_data_lne_stdev[t])
@@ -168,17 +190,37 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
   # get full dates with cases, NA will be assigned 0
   full_ww_virus = merge(x = full_dates, y = virus_county, by = "sample_collect_date", all = TRUE)
   ################################################################
-  temp_data_virus <- data.frame(
-    days = seq(1, length(full_ww_virus$sample_collect_date)),
-    virus_concen = full_ww_virus$pcr_target_flowpop_lin
-  )
-  temp_data_virus$days <- as.numeric(temp_data_virus$days)
-  temp_data_virus$virus_concen <- na.aggregate(temp_data_virus$virus_concen)
-  temp_lowess_ww_virus = loess(virus_concen ~ days, data = temp_data_virus)
-  temp_data_virus$virus_concen <- predict(temp_lowess_ww_virus, newdata = NULL)
-  # add lowess data back
-  full_ww_virus$lowess_data_virus <- temp_data_virus$virus_concen
+  # temp_data_virus <- data.frame(
+  #   days = seq(1, length(full_ww_virus$sample_collect_date)),
+  #   virus_concen = full_ww_virus$pcr_target_flowpop_lin
+  # )
+  # temp_data_virus$days <- as.numeric(temp_data_virus$days)
+  # temp_data_virus$virus_concen <- na.aggregate(temp_data_virus$virus_concen)
+  # temp_lowess_ww_virus = loess(virus_concen ~ days, data = temp_data_virus)
+  # temp_data_virus$virus_concen <- predict(temp_lowess_ww_virus, newdata = NULL)
+  # # add lowess data back
+  # full_ww_virus$lowess_data_virus <- temp_data_virus$virus_concen
   ################################################################
+  ################################################################
+  # Create example data
+  x <- 1:length(full_ww_virus$sample_collect_date)
+  y <- full_ww_virus$pcr_target_flowpop_lin
+  x.all <- seq(1, length(full_ww_virus$sample_collect_date), 1)
+  # Fit LOESS model
+  loess_model <- loess(y ~ x, na.action = na.exclude, span = span_const)
+  
+  # Predict missing values
+  predicted_values <- predict(loess_model, newdata=x.all)
+  
+  # Replace missing values with predicted values
+  #y[is.na(y)] <- predicted_values[is.na(y)]
+  full_ww_virus$lowess_data_virus <- predicted_values #y
+  
+  # View the updated data
+  #print(y)
+  
+  ################################################################
+  
   # add Ln_e()
   full_ww_virus$lowess_data_virus_lne <- log(full_ww_virus$lowess_data_virus)
   # get 1 year period to calculate 10th percentile
@@ -214,12 +256,13 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
   # # Join WW and CC to get the overlap
   # join_data <- 0
   join_data = merge(x = full_cdc_cases, y = full_ww_virus, by = "sample_collect_date")
+  # write_xlsx(join_data, "~/Documents/GitHub/R_UF/ML/Key_WW/Viral_activity_join_CC_WW_sewershed__span_0_1_all_values.xlsx")
   plot(join_data$sample_collect_date,
        join_data$viral_activity_cases,
        type = "l",
        col = 2,
-       ylim = c(0, 50),
-       main = "key_sewershed: va_61",
+       ylim = c(0, 30),
+       main = "key_sewershed: ca_158",
        xlab = "Date",
        ylab = "Viral Activity")
 
