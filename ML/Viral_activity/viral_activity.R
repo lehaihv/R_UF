@@ -135,9 +135,9 @@ same_county <- merge(virus_counties, cases_counties, by = "county_names")
 # slope_low = 0.8
 Mi_case = L_case = Mo_case = H_case = VH_case = 0
 Mi_virus = L_virus = Mo_virus = H_virus = VH_virus = 0
-span_const = 0.2
+span_const = 0.1
 for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_names)
-  z = 3
+  z = 27
   covid_county <- buffer_full[county_names == same_county$county_names[z]] 
   # Arranging cases according to the dates
   covid_county.cases_by_cdc_case_earliest_date <- arrange(covid_county, sample_collect_date)
@@ -193,7 +193,7 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
   if (length(temp) < 1) {temp[1] = length(full_cdc_cases$sample_collect_date)}
   full_cdc_cases$lowess_data_lne_quantile_10th <- quantile(full_cdc_cases$lowess_data_lne[1:temp[1]], probs = c(0.1), na.rm=TRUE) 
   # calculate standard deviation
-  full_cdc_cases$lowess_data_lne_stdev <- sd(full_cdc_cases$lowess_data_lne[1:temp[1]])
+  full_cdc_cases$lowess_data_lne_stdev <- sd(full_cdc_cases$lowess_data_lne[1:temp[1]], na.rm=TRUE)
   # calculate activity level with cases
   for (t in 1:length(full_cdc_cases$sample_collect_date)) {
     full_cdc_cases$viral_activity_cases[t] <- exp((full_cdc_cases$lowess_data_lne[t] - full_cdc_cases$lowess_data_lne_quantile_10th[t])/full_cdc_cases$lowess_data_lne_stdev[t])
@@ -290,13 +290,13 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
   # # Join WW and CC to get the overlap
   # join_data <- 0
   join_data = merge(x = full_cdc_cases, y = full_ww_virus, by = "sample_collect_date")
-  # write_xlsx(join_data, "~/Documents/GitHub/R_UF/ML/Viral_activity/Viral_activity_join_CC_WW_6019_span_0_0_5_all_values.xlsx")
+  write_xlsx(join_data, "~/Documents/GitHub/R_UF/ML/Viral_activity/Viral_activity_join_CC_WW_8069_span_0_1_all_values.xlsx")
   plot(join_data$sample_collect_date,
        join_data$viral_activity_cases,
        type = "l",
        col = 2,
-       ylim = c(0, 50),
-       main="County 6019",
+       ylim = c(0, 110),
+       main="County 8069",
        xlab = "Date",
        ylab = "Viral Activity")
 

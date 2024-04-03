@@ -99,11 +99,12 @@ same_county <- merge(virus_counties, cases_counties, by = "county_names")
 # window_size = 28
 # slope_high = 1.1
 # slope_low = 0.8
+# 8069 include of 7 "key_sewershed" (co_142, co_150, co_151, co_152, co_227, co_370, co_437)
 Mi_case = L_case = Mo_case = H_case = VH_case = 0
 Mi_virus = L_virus = Mo_virus = H_virus = VH_virus = 0
 span_const = 0.1
 for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_names)
-  z = 3 
+  z = 43 
   covid_county <- buffer_full[county_names == same_county$county_names[z]] 
   # Arranging cases according to the dates
   covid_county.cases_by_cdc_case_earliest_date <- arrange(covid_county, sample_collect_date)
@@ -256,13 +257,13 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
   # # Join WW and CC to get the overlap
   # join_data <- 0
   join_data = merge(x = full_cdc_cases, y = full_ww_virus, by = "sample_collect_date")
-  # write_xlsx(join_data, "~/Documents/GitHub/R_UF/ML/Key_WW/Viral_activity_join_CC_WW_sewershed__span_0_1_all_values.xlsx")
+  write_xlsx(join_data, "~/Documents/GitHub/R_UF/ML/Key_WW/Viral_activity_join_CC_WW_sewershed_co_437_span_0_1_all_values.xlsx")
   plot(join_data$sample_collect_date,
        join_data$viral_activity_cases,
        type = "l",
        col = 2,
-       ylim = c(0, 30),
-       main = "key_sewershed: ca_158",
+       ylim = c(0, 80),
+       main = "key_sewershed: co_437",
        xlab = "Date",
        ylab = "Viral Activity")
 
