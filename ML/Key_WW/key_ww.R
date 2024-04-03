@@ -166,7 +166,7 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
     full_cdc_cases$viral_activity_cases[t] <- exp((full_cdc_cases$lowess_data_lne[t] - full_cdc_cases$lowess_data_lne_quantile_10th[t])/full_cdc_cases$lowess_data_lne_stdev[t])
   }
   # assign activity level
-  full_cdc_cases[is.na(full_cdc_cases)] <- 0
+  full_cdc_cases$viral_activity_cases[is.na(full_cdc_cases$viral_activity_cases)] <- 0
   for (t in 1:length(full_cdc_cases$sample_collect_date)) {
     if (full_cdc_cases$viral_activity_cases[t] == 0) {full_cdc_cases$viral_level_cases[t] <- "Null"}
     else if (full_cdc_cases$viral_activity_cases[t] < 1.5) {full_cdc_cases$viral_level_cases[t] <- "Mi"}
@@ -238,7 +238,7 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
     full_ww_virus$viral_activity_virus[t] <- exp((full_ww_virus$lowess_data_virus_lne[t] - full_ww_virus$lowess_data_virus_lne_quantile_10th[t])/full_ww_virus$lowess_data_virus_lne_stdev[t])
   }
   # assign activity level
-  full_ww_virus[is.na(full_ww_virus)] <- 0
+  full_ww_virus$viral_activity_virus[is.na(full_ww_virus$viral_activity_virus)] <- 0
   for (t in 1:length(full_ww_virus$sample_collect_date)) {
     if (full_ww_virus$viral_activity_virus[t] == 0) {full_ww_virus$viral_level_virus[t] <- "Null"}
     else if (full_ww_virus$viral_activity_virus[t] < 1.5) {full_ww_virus$viral_level_virus[t] <- "Mi"}
@@ -257,7 +257,7 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
   # # Join WW and CC to get the overlap
   # join_data <- 0
   join_data = merge(x = full_cdc_cases, y = full_ww_virus, by = "sample_collect_date")
-  write_xlsx(join_data, "~/Documents/GitHub/R_UF/ML/Key_WW/Viral_activity_join_CC_WW_sewershed_co_437_span_0_1_all_values.xlsx")
+  # write_xlsx(join_data, "~/Documents/GitHub/R_UF/ML/Key_WW/Viral_activity_join_CC_WW_sewershed_co_437_span_0_1_all_values.xlsx")
   plot(join_data$sample_collect_date,
        join_data$viral_activity_cases,
        type = "l",
