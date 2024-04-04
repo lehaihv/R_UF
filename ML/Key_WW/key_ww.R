@@ -104,7 +104,7 @@ Mi_case = L_case = Mo_case = H_case = VH_case = 0
 Mi_virus = L_virus = Mo_virus = H_virus = VH_virus = 0
 span_const = 0.1
 for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_names)
-  z = 43 
+  z = 26 
   covid_county <- buffer_full[county_names == same_county$county_names[z]] 
   # Arranging cases according to the dates
   covid_county.cases_by_cdc_case_earliest_date <- arrange(covid_county, sample_collect_date)
@@ -154,7 +154,7 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
   full_cdc_cases$lowess_data_lne <- log(full_cdc_cases$lowess_data)
   # get 1 year period to calculate 10th percentile
   first_day <- full_cdc_cases$sample_collect_date[1]
-  last_day <- first_day + 365
+  last_day <- first_day + 364 #365
   temp <- which(grepl(last_day, full_cdc_cases$sample_collect_date))
   # in case less than 365 days
   if (length(temp) < 1) {temp[1] = length(full_cdc_cases$sample_collect_date)}
@@ -226,7 +226,7 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
   full_ww_virus$lowess_data_virus_lne <- log(full_ww_virus$lowess_data_virus)
   # get 1 year period to calculate 10th percentile
   first_day <- full_ww_virus$sample_collect_date[1]
-  last_day <- first_day + 365
+  last_day <- first_day + 364 #365
   temp <- which(grepl(last_day, full_ww_virus$sample_collect_date))
   # in case less than 365 days
   if (length(temp) < 1) {temp[1] = length(full_ww_virus$sample_collect_date)}
@@ -257,13 +257,13 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
   # # Join WW and CC to get the overlap
   # join_data <- 0
   join_data = merge(x = full_cdc_cases, y = full_ww_virus, by = "sample_collect_date")
-  # write_xlsx(join_data, "~/Documents/GitHub/R_UF/ML/Key_WW/Viral_activity_join_CC_WW_sewershed_co_437_span_0_1_all_values.xlsx")
+  write_xlsx(join_data, "~/Documents/GitHub/R_UF/ML/Key_WW/Viral_activity_join_CC_WW_sewershed_co_1522_span_0_1_all_values.xlsx")
   plot(join_data$sample_collect_date,
        join_data$viral_activity_cases,
        type = "l",
        col = 2,
-       ylim = c(0, 80),
-       main = "key_sewershed: co_437",
+       ylim = c(0, 120),
+       main = "key_sewershed: co_152",
        xlab = "Date",
        ylab = "Viral Activity")
 
