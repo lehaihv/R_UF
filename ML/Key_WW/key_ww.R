@@ -219,7 +219,7 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
   
   # View the updated data
   #print(y)
-  
+
   ################################################################
   
   # add Ln_e()
