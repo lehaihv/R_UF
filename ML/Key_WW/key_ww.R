@@ -175,7 +175,7 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
     else if (full_cdc_cases$viral_activity_cases[t] < 8) {full_cdc_cases$viral_level_cases[t] <- "H"}
     else {full_cdc_cases$viral_level_cases[t] <- "VH"}
   }
-  # write_xlsx(count_days, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_levels_CDC_cases_226_counties.xlsx")
+  # write_xlsx(full_cdc_cases, "~/Documents/GitHub/R_UF/ML/Key_WW/Viral_activity_CC_co_152_span_0_1_all_values.xlsx")
   
   ###############################################
   # viral concentration
@@ -247,7 +247,7 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
     else if (full_ww_virus$viral_activity_virus[t] < 8) {full_ww_virus$viral_level_virus[t] <- "H"}
     else {full_ww_virus$viral_level_virus[t] <- "VH"}
   }
-  
+  #write_xlsx(full_ww_virus, "~/Documents/GitHub/R_UF/ML/Key_WW/Viral_activity_WW_co_152_span_0_1_all_values.xlsx")
   #abline(full_ww_virus$sample_collect_date, full_ww_virus$viral_activity_virus)
   # write_xlsx(count_days, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_levels_CDC_cases_226_counties.xlsx")
   # full_cdc_cases <- subset(full_cdc_cases, select = -c(cases_by_cdc_case_earliest_date, lowess_data, lowess_data_lne, lowess_data_lne_quantile_10th, 
@@ -257,7 +257,7 @@ for (z in 1:length(same_county$county_names)) { # 226length(same_county$county_n
   # # Join WW and CC to get the overlap
   # join_data <- 0
   join_data = merge(x = full_cdc_cases, y = full_ww_virus, by = "sample_collect_date")
-  write_xlsx(join_data, "~/Documents/GitHub/R_UF/ML/Key_WW/Viral_activity_join_CC_WW_sewershed_co_1522_span_0_1_all_values.xlsx")
+  write_xlsx(join_data, "~/Documents/GitHub/R_UF/ML/Key_WW/Viral_activity_join_CC_WW_sewershed_co_152_span_0_1_all_values.xlsx")
   plot(join_data$sample_collect_date,
        join_data$viral_activity_cases,
        type = "l",
