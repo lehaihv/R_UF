@@ -49,7 +49,7 @@ Mi_virus = L_virus = Mo_virus = H_virus = VH_virus = 0
 lowess_data_lne_quantile_10th = lowess_data_lne_stdev = 0
 lowess_data_virus_lne_quantile_10th = lowess_data_virus_lne_stdev = 0
 span_const = 0.1
-for (z in 1:3) { #length(same_county$county_names)
+for (z in 1:15) { #length(same_county$county_names)
   # z = 1
   lowess_data_lne_quantile_10th = lowess_data_lne_stdev = 0
   lowess_data_virus_lne_quantile_10th = lowess_data_virus_lne_stdev = 0
@@ -216,7 +216,7 @@ for (z in 1:3) { #length(same_county$county_names)
        col = 2,
        #xlim = mylims,
        ylim = mylims, # c(0, 120),
-       main = paste("key_sewershed: ", same_county$county_names[z]),
+       main = paste("key_sewershed: ", same_county$county_names[z], "_", length(join_data$sample_collect_date), " days"),
        xlab = "Date",
        ylab = "Viral Activity")
 
