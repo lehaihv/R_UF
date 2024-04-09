@@ -49,8 +49,8 @@ Mi_virus = L_virus = Mo_virus = H_virus = VH_virus = 0
 lowess_data_lne_quantile_10th = lowess_data_lne_stdev = 0
 lowess_data_virus_lne_quantile_10th = lowess_data_virus_lne_stdev = 0
 span_const = 0.1
-for (z in 1:15) { #length(same_county$county_names)
-  # z = 1
+for (z in 1:length(same_county$county_names)) { #length(same_county$county_names)
+  # z = 25
   lowess_data_lne_quantile_10th = lowess_data_lne_stdev = 0
   lowess_data_virus_lne_quantile_10th = lowess_data_virus_lne_stdev = 0
   covid_county <- buffer_full[county_names == same_county$county_names[z]] 
@@ -200,83 +200,85 @@ for (z in 1:15) { #length(same_county$county_names)
   # write_xlsx(full_ww_virus, "~/Documents/GitHub/R_UF/ML/Key_WW/Viral_activity_WW_co_152_span_0_1_all_values.xlsx")
   # Join WW and CC to get the overlap
   join_data = merge(x = full_cdc_cases, y = full_ww_virus, by = "sample_collect_date")
-  # write_xlsx(join_data, "~/Documents/GitHub/R_UF/ML/Key_WW/Viral_activity_join_CC_WW_sewershed_co_152_span_0_1_all_values.xlsx")
-  ################################################################
-  # save graph of each sewersheds to file
-  png(filename=paste("~/Documents/GitHub/R_UF/ML/Key_WW/", same_county$county_names[z],".png"),
-      width	= 2050,
-      height = 1020, 
-      res = 180)
-  #jpeg(paste("~/Documents/GitHub/R_UF/ML/Key_WW/", same_county$county_names[z],".jpeg"), quality = 100)
-  mylims <- range(with(join_data, c(viral_activity_virus, viral_activity_cases)))
-  
-  plot(join_data$sample_collect_date,
-       join_data$viral_activity_cases,
-       type = "l",
-       col = 2,
-       #xlim = mylims,
-       ylim = mylims, # c(0, 120),
-       main = paste("key_sewershed: ", same_county$county_names[z], "_", length(join_data$sample_collect_date), " days"),
-       xlab = "Date",
-       ylab = "Viral Activity")
-
-  # Add line graphs of other two dataset
-  lines(join_data$sample_collect_date,
-        join_data$viral_activity_virus,
-        type = "l",
-        col = 3)
-  # Add legend in top right corner
-  legend("topright",
-         c("CC data", "WW data"),
-         lty = 1,
-         col = 2:4)
-  
-  ################################################################
-  # export plot of each sewersheds
-  dev.off()
-  
-  ################################################################
-  # wait after complete each sewersheds
-  # readline(prompt="Press [enter] to continue")
-  ################################################################
-  
-  # join_data <- filter(join_data, categories != 0, categories_virus != 0)
-  ###
-  # write_xlsx(full_cdc_cases, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_levels_cases_8069.xlsx")
-  # write_xlsx(full_ww_virus, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_levels_virus_concentration_8069.xlsx")
-  # write_xlsx(join_data, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_levels_join_CC_WW_8069.xlsx")
-  ###
-  # length(join_data$sample_collect_date)
-  Mi_case[z] = L_case[z] = Mo_case[z] = H_case[z] = VH_case[z] = 0
-  Mi_virus[z] = L_virus[z] = Mo_virus[z] = H_virus[z] = VH_virus[z] = 0
-  
-  if (length(join_data$sample_collect_date)>0) {
-    for (t in 1:length(join_data$sample_collect_date)) {
-      if(join_data$viral_level_cases[t] == "Mi") { 
-        Mi_case[z] = Mi_case[z] + 1 
-      } else if(join_data$viral_level_cases[t] == "L"){ 
-        L_case[z] = L_case[z] + 1
-      } else if(join_data$viral_level_cases[t] == "Mo"){ 
-        Mo_case[z] = Mo_case[z] + 1
-      } else if(join_data$viral_level_cases[t] == "H"){ 
-        H_case[z] = H_case[z] + 1
+  if (length(join_data$sample_collect_date) >50){
+    # write_xlsx(join_data, "~/Documents/GitHub/R_UF/ML/Key_WW/Viral_activity_join_CC_WW_sewershed_co_152_span_0_1_all_values.xlsx")
+    ################################################################
+    # save graph of each sewersheds to file
+    png(filename=paste("~/Documents/GitHub/R_UF/ML/Key_WW/Graphs/", same_county$county_names[z],".png"),
+        width	= 2050,
+        height = 1020, 
+        res = 180)
+    #jpeg(paste("~/Documents/GitHub/R_UF/ML/Key_WW/", same_county$county_names[z],".jpeg"), quality = 100)
+    mylims <- range(with(join_data, c(viral_activity_virus, viral_activity_cases)))
+    
+    plot(join_data$sample_collect_date,
+         join_data$viral_activity_cases,
+         type = "l",
+         col = 2,
+         #xlim = mylims,
+         ylim = mylims, # c(0, 120),
+         main = paste("key_sewershed: ", same_county$county_names[z], "_", length(join_data$sample_collect_date), " days"),
+         xlab = "Date",
+         ylab = "Viral Activity")
+    
+    # Add line graphs of other two dataset
+    lines(join_data$sample_collect_date,
+          join_data$viral_activity_virus,
+          type = "l",
+          col = 3)
+    # Add legend in top right corner
+    legend("topright",
+           c("CC data", "WW data"),
+           lty = 1,
+           col = 2:4)
+    
+    ################################################################
+    # export plot of each sewersheds
+    dev.off()
+    
+    ################################################################
+    # wait after complete each sewersheds
+    # readline(prompt="Press [enter] to continue")
+    ################################################################
+    
+    # join_data <- filter(join_data, categories != 0, categories_virus != 0)
+    ###
+    # write_xlsx(full_cdc_cases, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_levels_cases_8069.xlsx")
+    # write_xlsx(full_ww_virus, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_levels_virus_concentration_8069.xlsx")
+    # write_xlsx(join_data, "~/Documents/GitHub/R_UF/ML/WWScan/Risk_levels_join_CC_WW_8069.xlsx")
+    ###
+    # length(join_data$sample_collect_date)
+    Mi_case[z] = L_case[z] = Mo_case[z] = H_case[z] = VH_case[z] = 0
+    Mi_virus[z] = L_virus[z] = Mo_virus[z] = H_virus[z] = VH_virus[z] = 0
+    
+    if (length(join_data$sample_collect_date)>0) {
+      for (t in 1:length(join_data$sample_collect_date)) {
+        if(join_data$viral_level_cases[t] == "Mi") { 
+          Mi_case[z] = Mi_case[z] + 1 
+        } else if(join_data$viral_level_cases[t] == "L"){ 
+          L_case[z] = L_case[z] + 1
+        } else if(join_data$viral_level_cases[t] == "Mo"){ 
+          Mo_case[z] = Mo_case[z] + 1
+        } else if(join_data$viral_level_cases[t] == "H"){ 
+          H_case[z] = H_case[z] + 1
+        }
+        else if(join_data$viral_level_cases[t] == "VH"){
+          VH_case[z] = VH_case[z] + 1
+        }
       }
-      else if(join_data$viral_level_cases[t] == "VH"){
-        VH_case[z] = VH_case[z] + 1
-      }
-    }
-    for (t in 1:length(join_data$sample_collect_date)) {
-      if(join_data$viral_level_virus[t] == "Mi") { 
-        Mi_virus[z] = Mi_virus[z] + 1 
-      } else if(join_data$viral_level_virus[t] == "L"){ 
-        L_virus[z] = L_virus[z] + 1
-      } else if(join_data$viral_level_virus[t] == "Mo"){ 
-        Mo_virus[z] = Mo_virus[z] + 1
-      } else if(join_data$viral_level_virus[t] == "H"){ 
-        H_virus[z] = H_virus[z] + 1
-      }
-      else if(join_data$viral_level_virus[t] == "VH"){
-        VH_virus[z] = VH_virus[z] + 1
+      for (t in 1:length(join_data$sample_collect_date)) {
+        if(join_data$viral_level_virus[t] == "Mi") { 
+          Mi_virus[z] = Mi_virus[z] + 1 
+        } else if(join_data$viral_level_virus[t] == "L"){ 
+          L_virus[z] = L_virus[z] + 1
+        } else if(join_data$viral_level_virus[t] == "Mo"){ 
+          Mo_virus[z] = Mo_virus[z] + 1
+        } else if(join_data$viral_level_virus[t] == "H"){ 
+          H_virus[z] = H_virus[z] + 1
+        }
+        else if(join_data$viral_level_virus[t] == "VH"){
+          VH_virus[z] = VH_virus[z] + 1
+        }
       }
     }
   }
@@ -303,7 +305,7 @@ df_mul <- data.frame(key_sewershed = same_county$county_names,
 
 # Plot VHigh category
 plot(df_mul$No_of_days_VHigh_Virus_concen, df_mul$No_of_days_VHigh_Covid_case,
-     main="Number of days in High Risk",
+     main="Number of days with Very High Viral Activity",
      xlab="Virus concentration", ylab="CDC covid cases",
      pch=19, col="darkgreen", cex=0.75)
 # Linear fit
@@ -313,7 +315,7 @@ model1
 
 # Plot High category
 plot(df_mul$No_of_days_High_Virus_concen, df_mul$No_of_days_High_Covid_case,
-     main="Number of days in High Risk",
+     main="Number of days with High Viral Activity",
      xlab="Virus concentration", ylab="CDC covid cases",
      pch=19, col="darkgreen", cex=0.75)
 # Linear fit
@@ -323,7 +325,7 @@ model11
 
 # Plot Moderate category
 plot(df_mul$No_of_days_Mod_Virus_concen, df_mul$No_of_days_Mod_Covid_case,
-     main="Number of days in Medium Risk",
+     main="Number of days with Moderate Viral Activity",
      xlab="Virus concentration", ylab="CDC covid cases",
      pch=19, col="darkgreen", cex=0.75)
 # Linear fit
@@ -333,7 +335,7 @@ model2
 
 # Plot Low category
 plot(df_mul$No_of_days_Low_Virus_concen, df_mul$No_of_days_Low_Covid_case,
-     main="Number of days in Low Risk",
+     main="Number of days with Low Viral Activity",
      xlab="Virus concentration", ylab="CDC covid cases",
      pch=19, col="darkgreen", cex=0.75)
 # Linear fit
@@ -341,11 +343,11 @@ abline(lm(df_mul$No_of_days_Low_Virus_concen ~ df_mul$No_of_days_Low_Covid_case)
 model3 <- summary(lm(df_mul$No_of_days_Low_Virus_concen ~ df_mul$No_of_days_Low_Covid_case, data = df_mul))
 model3
 
-# Plot High + Medium category
+# Plot High + VHigh category
 H_M_virus = df_mul$No_of_days_High_Virus_concen + df_mul$No_of_days_VHigh_Virus_concen
 H_M_cases = df_mul$No_of_days_High_Covid_case + df_mul$No_of_days_VHigh_Covid_case
 plot(H_M_virus, H_M_cases,
-     main="Number of days in High and Medium Risk",
+     main="Number of days with Very High and High Viral Activity",
      xlab="Virus concentration", ylab="CDC covid cases",
      pch=19, col="darkgreen", cex=0.75)
 # Linear fit
