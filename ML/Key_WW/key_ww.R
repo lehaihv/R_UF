@@ -25,9 +25,9 @@ library(ggplot2)
 library(readxl)
 library(writexl)
 library(zoo)
-options(java.parameters = "-Xmx1024m")
+# options(java.parameters = "-Xmx1024m")
 # options(java.parameters = "-Xmx4g" )
-library(XLConnect)
+# library(XLConnect)
 # options(max.print=999999)
 # set seed
 set.seed(1234)
@@ -39,6 +39,31 @@ set.seed(1234)
 # for (t in 1:length(covid_3$sample_collect_date)) {
 #   covid_3$cases_per_100k_pop[t] <- covid_3$cases_by_cdc_case_earliest_date[t]*100000/covid_3$population_served[t] 
 # }
+# covid_1 <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/Key_WW/Data_set.xlsx"))
+# covid_2 <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/Key_WW/Data_set1.xlsx"))
+# covid_3 <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/Key_WW/Data_set2.xlsx"))
+# covid_4 <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/Key_WW/Data_set3.xlsx"))
+# covid_5 <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/Key_WW/Data_set4.xlsx"))
+# covid_6 <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/Key_WW/Data_set5.xlsx"))
+# covid_7 <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/Key_WW/Data_set6.xlsx"))
+# covid_8 <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/Key_WW/Data_set7.xlsx"))
+# covid_9 <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/Key_WW/Data_set8.xlsx"))
+# 
+# covid_10 <- merge(covid_1, covid_2, by = c("location","overlapped_dates","WW_activity_level", "CC_LOESS_processed_cases_100k_pop"), all = TRUE)
+# covid_10 <- merge(covid_10, covid_3, by = c("location","overlapped_dates","WW_activity_level", "CC_LOESS_processed_cases_100k_pop"), all = TRUE)
+# covid_10 <- merge(covid_10, covid_4, by = c("location","overlapped_dates","WW_activity_level", "CC_LOESS_processed_cases_100k_pop"), all = TRUE)
+# covid_10 <- merge(covid_10, covid_5, by = c("location","overlapped_dates","WW_activity_level", "CC_LOESS_processed_cases_100k_pop"), all = TRUE)
+# covid_10 <- merge(covid_10, covid_6, by = c("location","overlapped_dates","WW_activity_level", "CC_LOESS_processed_cases_100k_pop"), all = TRUE)
+# covid_10 <- merge(covid_10, covid_7, by = c("location","overlapped_dates","WW_activity_level", "CC_LOESS_processed_cases_100k_pop"), all = TRUE)
+# covid_10 <- merge(covid_10, covid_8, by = c("location","overlapped_dates","WW_activity_level", "CC_LOESS_processed_cases_100k_pop"), all = TRUE)
+# covid_10 <- merge(covid_10, covid_9, by = c("location","overlapped_dates","WW_activity_level", "CC_LOESS_processed_cases_100k_pop"), all = TRUE)
+# write_xlsx(covid_10, "~/Documents/GitHub/R_UF/ML/Key_WW/Data_set_full.xlsx")
+# covid_1 <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/Key_WW/county_code1.xlsx"))
+# covid_2 <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/Key_WW/Data_set_full.xlsx"))
+# covid_4 <- covid_2[, -c("overlapped_dates","WW_activity_level", "CC_LOESS_processed_cases_100k_pop")]
+# covid_3 <- merge(covid_4, covid_1, by = c("location"), all.x = TRUE)
+# covid_2$county_names <- covid_3$county_names
+# write_xlsx(covid_2, "~/Documents/GitHub/R_UF/ML/Key_WW/Data_set_full_location_county.xlsx")
 ##################################################
 # load CC data
 covid_cases_cdc <- as.data.table(read_excel("~/Documents/GitHub/R_UF/ML/Key_WW/covid_cdc_cases_03202024_100k_key_ww_full.xlsx", sheet = 1))
@@ -218,22 +243,22 @@ for (z in 301:373) { #length(same_county$county_names)
       join_data = merge(x = full_cdc_cases, y = full_ww_virus, by = "sample_collect_date")
       if (length(join_data$sample_collect_date) >50){
         ################################################################
-        # create required data file
-        data_temp <- data.frame( location = same_county$county_names[z],
-                                 overlapped_dates = join_data$sample_collect_date,
-                                 WW_activity_level = join_data$viral_activity_virus,
-                                 CC_LOESS_processed_cases_100k_pop = join_data$lowess_data)
-        
-        # filename=paste("~/Documents/GitHub/R_UF/ML/Key_WW/Data_set.xlsx")
-        if (z < 302) {
-          write_xlsx(data_temp, "~/Documents/GitHub/R_UF/ML/Key_WW/Data_set8.xlsx")
-          wb <- loadWorkbook("~/Documents/GitHub/R_UF/ML/Key_WW/Data_set8.xlsx")
-          }
-        else {
-          #wb <- loadWorkbook("~/Documents/GitHub/R_UF/ML/Key_WW/Data_set.xlsx")
-          appendWorksheet(wb, data_temp, sheet = 1, header = FALSE)
-          #saveWorkbook(wb)
-        }
+        # # create required data file
+        # data_temp <- data.frame( location = same_county$county_names[z],
+        #                          overlapped_dates = join_data$sample_collect_date,
+        #                          WW_activity_level = join_data$viral_activity_virus,
+        #                          CC_LOESS_processed_cases_100k_pop = join_data$lowess_data)
+        # 
+        # # filename=paste("~/Documents/GitHub/R_UF/ML/Key_WW/Data_set.xlsx")
+        # if (z < 302) {
+        #   write_xlsx(data_temp, "~/Documents/GitHub/R_UF/ML/Key_WW/Data_set8.xlsx")
+        #   wb <- loadWorkbook("~/Documents/GitHub/R_UF/ML/Key_WW/Data_set8.xlsx")
+        #   }
+        # else {
+        #   #wb <- loadWorkbook("~/Documents/GitHub/R_UF/ML/Key_WW/Data_set.xlsx")
+        #   appendWorksheet(wb, data_temp, sheet = 1, header = FALSE)
+        #   #saveWorkbook(wb)
+        # }
         
         ################################################################
         
@@ -323,7 +348,7 @@ for (z in 301:373) { #length(same_county$county_names)
   }
 }  # main for loop
 
-saveWorkbook(wb)
+# saveWorkbook(wb)
 # xlcFreeMemory()
 
 # Plot data
