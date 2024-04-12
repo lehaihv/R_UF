@@ -86,7 +86,7 @@ Mi_virus = L_virus = Mo_virus = H_virus = VH_virus = 0
 lowess_data_lne_quantile_10th = lowess_data_lne_stdev = 0
 lowess_data_virus_lne_quantile_10th = lowess_data_virus_lne_stdev = 0
 span_const = 0.1
-for (z in 301:373) { #length(same_county$county_names)
+for (z in 1:length(same_county$county_names)) { #length(same_county$county_names)
   #z = 1
   lowess_data_lne_quantile_10th = lowess_data_lne_stdev = 0
   lowess_data_virus_lne_quantile_10th = lowess_data_virus_lne_stdev = 0
